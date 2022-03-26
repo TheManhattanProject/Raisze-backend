@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,8 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
 
 
-     #3rd party libraries 
-    
+     #3rd party libraries
 
 ]
 
@@ -129,3 +129,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+
+
+# Channels
+ASGI_APPLICATION = 'raisze_backend.asgi.application'
