@@ -9,6 +9,10 @@ gunicorn = "*"
 psycopg2-binary = "*"
 dj-database-url = "*"
 channels = "*"
+dj-rest-auth = "*"
+django-allauth = "*"
+djangorestframework = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 
