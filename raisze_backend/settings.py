@@ -52,6 +52,14 @@ INSTALLED_APPS = [
     'dj_rest_auth.registration',
     'allauth.socialaccount.providers.google',
 
+    #for Oauth 
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+
 ]
 
 MIDDLEWARE = [
@@ -174,3 +182,13 @@ ASGI_APPLICATION = 'raisze_backend.asgi.application'
 
 
 SITE_ID = 1
+
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('redis', 6379)],
+        },
+    },
+}
