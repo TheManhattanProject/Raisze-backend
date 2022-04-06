@@ -52,6 +52,7 @@ class Campaign(models.Model):
     cover_image=models.ImageField(upload_to=campaign_cover_image_directory_path)
     video_link=models.TextField()
     campaign_detail_completed=models.BooleanField(default=False)
+    campaign_verification_success=models.BooleanField(default=False)
     campaign_launch_date=models.DateTimeField(blank=True,null=True)
     campaign_duration=models.DateTimeField(blank=True,null=True)
     campaign_total_funded=models.DecimalField(max_digits=14,decimal_places=2)
