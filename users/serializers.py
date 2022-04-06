@@ -16,7 +16,6 @@ from django.contrib.auth.forms import SetPasswordForm, PasswordResetForm
 from dj_rest_auth.serializers import PasswordResetSerializer as _PasswordResetSerializer
 from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
-from userstatistics.models import UserInfo
 from dj_rest_auth.models import TokenModel
 from dj_rest_auth.utils import import_callable
 from dj_rest_auth.serializers import UserDetailsSerializer as DefaultUserDetailsSerializer

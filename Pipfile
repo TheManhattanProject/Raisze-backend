@@ -14,6 +14,9 @@ django-allauth = "*"
 djangorestframework = "*"
 django-cors-headers = "*"
 django-rest-auth = "*"
+django-storages = "*"
+boto3 = "*"
+pillow = "*"
 
 [dev-packages]
 

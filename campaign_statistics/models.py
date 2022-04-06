@@ -43,7 +43,7 @@ class Tags(models.Model):
 
 class Campaign(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    categorites=models.ManyToManyField(SubCategory,on_delete=models.SET_NULL,blank=True, null=True,)
+    categorites=models.ManyToManyField(SubCategory,blank=True)
     campaign_id=models.UUIDField(primary_key = True,default = uuid.uuid4,editable = False)
     campaign_admin=models.ForeignKey(get_user_model(),on_delete=models.SET_NULL,blank=True, null=True,)
     country_of_origin=models.ForeignKey(Country,on_delete=models.SET_NULL,blank=False, null=True,)
@@ -63,10 +63,10 @@ class Campaign(models.Model):
     campaign_environment_commitment=models.TextField()
     campaign_bank_account_no=models.CharField(max_length=256)
     campaign_bank_account_ifsc=models.CharField(max_length=256)
-    campaign_age_range_min=models.IntegerField(max_length=256)
-    campaign_age_range_max=models.IntegerField(max_length=256)
-    campaign_gender=models.ManyToManyField(Gender,on_delete=models.SET_NULL,blank=True, null=True,)
-    campaign_tags=models.ManyToManyField(Tags,on_delete=models.SET_NULL,blank=True, null=True,)
+    campaign_age_range_min=models.IntegerField()
+    campaign_age_range_max=models.IntegerField()
+    campaign_gender=models.ManyToManyField(Gender,blank=True)
+    campaign_tags=models.ManyToManyField(Tags,blank=True)
 
 
 class Items(models.Model):
@@ -89,7 +89,7 @@ class Reward(models.Model):
     reward_title=models.CharField(max_length=256)
     reward_description=models.TextField()
     reward_amount=models.DecimalField(max_digits=12,decimal_places=2)
-    items=models.ManyToManyField(Items,on_delete=models.SET_NULL,blank=True, null=True,)
+    items=models.ManyToManyField(Items,blank=True)
     reward_isdigital=models.BooleanField(default=False)
     reward_shipping=models.CharField(max_length=256,choices=Shipping.choices,default=Shipping.THREE)
     reward_estimated_delivery=models.DateField()

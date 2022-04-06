@@ -55,9 +55,9 @@ INSTALLED_APPS = [
 
      #local
      'users.apps.UsersConfig',
-     'campaign_statistics.apps.CampaignStatisticsConfig'
+     'campaign_statistics.apps.CampaignStatisticsConfig',
      'community.apps.CommunityConfig',
-     'orders,apps.OrdersConfig'
+     'orders.apps.OrdersConfig'
 
 ]
 
