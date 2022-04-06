@@ -30,7 +30,16 @@ class Country(models.Model):
 def campaign_cover_image_directory_path(instance, filename):
     return 'campaign_cover_image_{0}/{1}'.format(instance.campaign_id, filename)
 
+class Gender(models.Model):
+    gender=models.CharField(max_length=256)
+    def __str__(self):
+        return self.gender
 
+
+class Tags(models.Model):
+    tags=models.CharField(max_length=256)
+    def __str__(self):
+        return self.tags
 
 class Campaign(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -53,6 +62,10 @@ class Campaign(models.Model):
     campaign_environment_commitment=models.TextField()
     campaign_bank_account_no=models.CharField(max_length=256)
     campaign_bank_account_ifsc=models.CharField(max_length=256)
+    campaign_age_range_min=models.IntegerField(max_length=256)
+    campaign_age_range_max=models.IntegerField(max_length=256)
+    campaign_gender=models.ManyToManyField(Gender,on_delete=models.SET_NULL,blank=True, null=True,)
+    campaign_tags=models.ManyToManyField(Tags,on_delete=models.SET_NULL,blank=True, null=True,)
 
 
 class Items(models.Model):
