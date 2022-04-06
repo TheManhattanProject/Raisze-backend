@@ -25,7 +25,7 @@ SECRET_KEY = 's5%n9g4b=48=upi+9k^r91(ppmm6il!)8&h$b6&783q%*w*z7)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -45,19 +45,12 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
+    # 'rest_auth',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'dj_rest_auth',
     'dj_rest_auth.registration',
-    'allauth.socialaccount.providers.google',
-
-    #for Oauth 
-    'django.contrib.sites',
-    'allauth',
-    'allauth.account',
-    'rest_auth.registration',
-    'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
 
 ]
