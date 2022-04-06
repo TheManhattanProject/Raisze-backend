@@ -45,13 +45,19 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
-    # 'rest_auth',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'dj_rest_auth',
     'dj_rest_auth.registration',
     'allauth.socialaccount.providers.google',
+
+
+     #local
+     'users.apps.UsersConfig',
+     'campaign_statistics.apps.CampaignStatisticsConfig'
+     'community.apps.CommunityConfig',
+     'orders,apps.OrdersConfig'
 
 ]
 
