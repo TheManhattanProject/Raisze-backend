@@ -57,7 +57,8 @@ INSTALLED_APPS = [
      'users.apps.UsersConfig',
      'campaign_statistics.apps.CampaignStatisticsConfig',
      'community.apps.CommunityConfig',
-     'orders.apps.OrdersConfig'
+     'orders.apps.OrdersConfig',
+     'articles.apps.ArticlesConfig',
 
 ]
 
