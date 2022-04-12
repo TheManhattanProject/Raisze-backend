@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'django.contrib.postgres',
 
 
      #3rd party libraries
@@ -59,6 +60,7 @@ INSTALLED_APPS = [
      'community.apps.CommunityConfig',
      'orders.apps.OrdersConfig',
      'articles.apps.ArticlesConfig',
+     'userstatistics.apps.UserstatisticsConfig',
 
 ]
 
