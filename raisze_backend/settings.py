@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'dj_rest_auth',
     'dj_rest_auth.registration',
     'allauth.socialaccount.providers.google',
+    'storages',
 
 
      #local
@@ -211,3 +212,26 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+AWS_ACCESS_KEY_ID = 'DUNTHY2N5QRAR32HL5I7'
+AWS_SECRET_ACCESS_KEY = '48uxWU7OCu8IworQ2LG1T9LGYfDjorG2G39XhMFrK+s'
+AWS_STORAGE_BUCKET_NAME = 'shortsqueeze'
+AWS_S3_ENDPOINT_URL = 'https://shortsqueeze.sgp1.digitaloceanspaces.com'
+# I enabled the CDN, so you get a custom domain. Use the end point in the AWS_S3_CUSTOM_DOMAIN setting. 
+# AWS_S3_CUSTOM_DOMAIN = 'shortsqueeze.sgp1.cdn.digitaloceanspaces.com/shortsqueeze.space'
+AWS_S3_CUSTOM_DOMAIN ='shortsqueeze.sgp1.cdn.digitaloceanspaces.com/shortsqueeze'
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+
+AWS_DEFAULT_ACL = 'public-read'
+
+# STATICFILES_STORAGE = 'custom_storages.StaticStorage'
+DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
+
+# Use AWS_S3_ENDPOINT_URL here if you haven't enabled the CDN and got a custom domain. 
+# STATIC_URL = '/static/'
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+MEDIA_URL = '{}/{}/'.format(AWS_S3_CUSTOM_DOMAIN, 'media')
+MEDIA_ROOT = 'media/'

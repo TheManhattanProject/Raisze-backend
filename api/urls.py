@@ -14,4 +14,5 @@ urlpatterns = [
     path('create_article/', CreatePostView.as_view(), name='create_article'),
     path('articles/', ListArticleView.as_view(), name='articles'),
     path('create_financial_sheets/', CreateFinancialSheetsView.as_view(), name='create-financial-sheets'),
+    path('save_campaigns/', CreateSaveCampaignsView.as_view(), name='save-campaigns'),
 ]
