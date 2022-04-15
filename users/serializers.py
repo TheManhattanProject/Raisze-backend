@@ -91,3 +91,16 @@ class UserSerializer(UserDetailsSerializer):
 
         instance = super().update(instance, validated_data)
         return instance
+
+class UpdateUserSerializer(UserDetailsSerializer):
+    class Meta(UserDetailsSerializer.Meta):
+        model=get_user_model()
+        fields = ('gender','date_of_birth','pk',)
+
+
+class CustomTokenSerializer(serializers.ModelSerializer):
+    user = UserDetailsSerializer(read_only=True)
+
+    class Meta:
+        model = TokenModel
+        fields = ('key', 'user', )

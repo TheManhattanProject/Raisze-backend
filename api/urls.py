@@ -2,6 +2,7 @@ from .views import *
 from django.urls import path, include
 from articles.views import *
 from userstatistics.views import *
+from users.views import *
 
 
 
@@ -15,4 +16,5 @@ urlpatterns = [
     path('articles/', ListArticleView.as_view(), name='articles'),
     path('create_financial_sheets/', CreateFinancialSheetsView.as_view(), name='create-financial-sheets'),
     path('save_campaigns/', CreateSaveCampaignsView.as_view(), name='save-campaigns'),
+    path('complete_registration', UpdateUser.as_view(), name='update-user'),
 ]
