@@ -63,6 +63,9 @@ INSTALLED_APPS = [
      'articles.apps.ArticlesConfig',
      'userstatistics.apps.UserstatisticsConfig',
 
+     #tools
+     'tools',
+
 ]
 
 MIDDLEWARE = [
