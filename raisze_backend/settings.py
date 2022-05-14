@@ -62,9 +62,8 @@ INSTALLED_APPS = [
      'orders.apps.OrdersConfig',
      'articles.apps.ArticlesConfig',
      'userstatistics.apps.UserstatisticsConfig',
-
      #tools
-     'tools',
+     'tools.apps.ToolsConfig',
 
 ]
 
