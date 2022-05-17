@@ -18,5 +18,9 @@ urlpatterns = [
     path('create_financial_sheets/', CreateFinancialSheetsView.as_view(), name='create-financial-sheets'),
     path('save_campaigns/', CreateSaveCampaignsView.as_view(), name='save-campaigns'),
     path('complete_registration', UpdateUser.as_view(), name='update-user'),
-    path('valuation/', CreateValuationView.as_view(), name='valuation')
+    path('valuation/', CreateValuationView.as_view(), name='valuation'),
+    path('tools/create_tools', CreateToolsView.as_view(), name='create-tools'),
+    path('tools/update_tools', UpdateToolsView.as_view(), name='update-tools'),
+    path('tools/list_tools', ListToolsView.as_view(), name='list-tools'),
+
 ]
