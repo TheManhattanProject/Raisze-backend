@@ -31,7 +31,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'channels',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
 
 
-     #3rd party libraries
+    # 3rd party libraries
+    'channels',
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
@@ -55,15 +56,16 @@ INSTALLED_APPS = [
     'storages',
 
 
-     #local
-     'users.apps.UsersConfig',
-     'campaign_statistics.apps.CampaignStatisticsConfig',
-     'community.apps.CommunityConfig',
-     'orders.apps.OrdersConfig',
-     'articles.apps.ArticlesConfig',
-     'userstatistics.apps.UserstatisticsConfig',
-     #tools
-     'tools.apps.ToolsConfig',
+    # local
+    'users.apps.UsersConfig',
+    'campaign_statistics.apps.CampaignStatisticsConfig',
+    'community.apps.CommunityConfig',
+    'orders.apps.OrdersConfig',
+    'articles.apps.ArticlesConfig',
+    'userstatistics.apps.UserstatisticsConfig',
+    # tools
+    'chat.apps.ChatConfig',
+    'tools.apps.ToolsConfig',
 
 ]
 
@@ -75,11 +77,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-     'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_CREDENTIALS=True
+CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_METHODS = [
     'DELETE',
@@ -89,7 +91,6 @@ CORS_ALLOW_METHODS = [
     'POST',
     'PUT',
 ]
-
 
 
 ROOT_URLCONF = 'raisze_backend.urls'
@@ -120,10 +121,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgres',
-        'USER':'postgres',
-        'PASSWORD':'postgres',
-        'HOST':'db',
-        'PORT':5432
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'db',
+        'PORT': 5432
     }
 }
 
@@ -136,8 +137,8 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication', # new
-], }
+        'rest_framework.authentication.TokenAuthentication',  # new
+    ], }
 
 REST_AUTH_REGISTER_SERIALIZERS = {
     'REGISTER_SERIALIZER': 'users.serializers.CustomRegisterSerializer',
@@ -186,8 +187,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 
-
-
 # Channels
 ASGI_APPLICATION = 'raisze_backend.asgi.application'
 
@@ -205,9 +204,8 @@ CHANNEL_LAYERS = {
 }
 
 
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-AUTH_USER_MODEL='users.CustomUser'
+AUTH_USER_MODEL = 'users.CustomUser'
 SITE_ID = 1
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
@@ -220,9 +218,9 @@ AWS_ACCESS_KEY_ID = 'DUNTHY2N5QRAR32HL5I7'
 AWS_SECRET_ACCESS_KEY = '48uxWU7OCu8IworQ2LG1T9LGYfDjorG2G39XhMFrK+s'
 AWS_STORAGE_BUCKET_NAME = 'shortsqueeze'
 AWS_S3_ENDPOINT_URL = 'https://shortsqueeze.sgp1.digitaloceanspaces.com'
-# I enabled the CDN, so you get a custom domain. Use the end point in the AWS_S3_CUSTOM_DOMAIN setting. 
+# I enabled the CDN, so you get a custom domain. Use the end point in the AWS_S3_CUSTOM_DOMAIN setting.
 # AWS_S3_CUSTOM_DOMAIN = 'shortsqueeze.sgp1.cdn.digitaloceanspaces.com/shortsqueeze.space'
-AWS_S3_CUSTOM_DOMAIN ='shortsqueeze.sgp1.cdn.digitaloceanspaces.com/shortsqueeze'
+AWS_S3_CUSTOM_DOMAIN = 'shortsqueeze.sgp1.cdn.digitaloceanspaces.com/shortsqueeze'
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
@@ -232,7 +230,7 @@ AWS_DEFAULT_ACL = 'public-read'
 # STATICFILES_STORAGE = 'custom_storages.StaticStorage'
 DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
 
-# Use AWS_S3_ENDPOINT_URL here if you haven't enabled the CDN and got a custom domain. 
+# Use AWS_S3_ENDPOINT_URL here if you haven't enabled the CDN and got a custom domain.
 # STATIC_URL = '/static/'
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
