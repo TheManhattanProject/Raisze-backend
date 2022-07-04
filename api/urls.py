@@ -25,6 +25,6 @@ urlpatterns = [
     path('campaign/popular', PopularCampaignsView.as_view(), name="popular-campaign"),
     path('campaign/list', CampaignListAPIView.as_view(), name="campaign-list"),
     path('campaign/subcategory', SubPopularCampaignsView.as_view(), name="subpopular-campaigns"),
-    path('campaign/update', UpdateCampaignAPIView.as_view(), name="update-campaigns"),
+    path('campaign/update/<str:id>', UpdateCampaignAPIView.as_view(), name="update-campaigns"),
     path('campaign_image/list', ListCreateCampaignImageAPIView.as_view(),name="list-campaign-image"),
 ]

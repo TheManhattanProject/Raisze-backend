@@ -74,6 +74,7 @@ class Campaign(models.Model):
     campaign_gender=models.ManyToManyField(Gender,blank=True)
     campaign_tags=models.ManyToManyField(Tags,blank=True)
     campaign_images = models.ManyToManyField(CampaignImage)
+    is_deleted = models.BooleanField(default=False)
 
 
 class Items(models.Model):
