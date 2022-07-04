@@ -65,6 +65,7 @@ class Campaign(models.Model):
     campaign_bank_account_ifsc=models.CharField(max_length=256)
     campaign_age_range_min=models.IntegerField()
     campaign_age_range_max=models.IntegerField()
+    nor_score = models.DecimalField(default=0, decimal_places=4, max_digits=5)
     campaign_gender=models.ManyToManyField(Gender,blank=True)
     campaign_tags=models.ManyToManyField(Tags,blank=True)
 
@@ -95,7 +96,7 @@ class Reward(models.Model):
     reward_estimated_delivery=models.DateField()
     reward_quantity_is_unlimited=models.BooleanField(default=False)
     reward_quantity=models.BigIntegerField()
-    reward_quantity_left=models.BigIntegerField()
+    reward_quantity_left=models.BigIntegerField()    
 
     def __str__(self):
         return self.reward_title

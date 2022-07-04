@@ -4,7 +4,7 @@ from articles.views import *
 from userstatistics.views import *
 from users.views import *
 from tools.views import *
-
+from campaign_statistics.views import *
 
 
 
@@ -22,5 +22,7 @@ urlpatterns = [
     path('tools/create_tools', CreateToolsView.as_view(), name='create-tools'),
     path('tools/update_tools', UpdateToolsView.as_view(), name='update-tools'),
     path('tools/list_tools', ListToolsView.as_view(), name='list-tools'),
+    path('campaign/popular', PopularCampaignsView.as_view(), name="popular-campaign"),
+    path('campaign/list', CampaignListAPIView.as_view(), name="campaign-list")
 
 ]

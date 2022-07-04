@@ -17,7 +17,7 @@ django-rest-auth = "*"
 django-storages = "*"
 boto3 = "*"
 pillow = "*"
-
+celery = "*"
 [dev-packages]
 
 [requires]

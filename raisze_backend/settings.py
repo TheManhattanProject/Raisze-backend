@@ -204,8 +204,6 @@ CHANNEL_LAYERS = {
     },
 }
 
-
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL='users.CustomUser'
 SITE_ID = 1
@@ -228,7 +226,9 @@ AWS_S3_OBJECT_PARAMETERS = {
 }
 
 AWS_DEFAULT_ACL = 'public-read'
-
+CELERY_BROKER_URL = "redis://redis:6379/0"
+CELERY_RESULT_BACKEND = "redis://redis:6379/0"
+CELERY_TIMEZONE = "asia/kolkata"
 # STATICFILES_STORAGE = 'custom_storages.StaticStorage'
 DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
 

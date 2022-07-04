@@ -18,3 +18,10 @@ class CreateCampaignSerializer(serializers.ModelSerializer):
     #     trip.save()
     #     TripRating.objects.create(trip=trip)
     #     return trip
+
+class ListCampaignSerializer(serializers.ModelSerializer):
+
+
+    class Meta:
+        model = Campaign
+        exclude = ("categorites", "nor_score")

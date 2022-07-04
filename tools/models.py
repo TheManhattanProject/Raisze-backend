@@ -10,3 +10,5 @@ class Valuation(models.Model):
 class Tools(models.Model):
     tool = models.CharField(max_length=250)
     attributes = models.JSONField()
+    clicks = models.IntegerField(default=0)
+    nor_score = models.DecimalField(default=0, decimal_places=4, max_digits=5)
