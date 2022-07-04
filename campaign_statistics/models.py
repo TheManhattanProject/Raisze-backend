@@ -10,12 +10,14 @@ from django.contrib.auth import get_user_model
 
 class Category(models.Model):
     category_id=models.CharField(max_length=256)
+    is_deleted=models.BooleanField(default=False)
     def __str__(self):
         return self.category_id
 
 class SubCategory(models.Model):
     category=models.ForeignKey(Category,on_delete=models.SET_NULL,blank=True, null=True,)
     subcategory_id=models.CharField(max_length=256)
+    is_deleted = models.BooleanField(default=False)
     def __str__(self):
         return self.subcategory_id
 
@@ -33,6 +35,7 @@ def campaign_cover_image_directory_path(instance, filename):
 
 class CampaignImage(models.Model):
     image = models.ImageField()
+    is_deleted = models.BooleanField(default=False)
 
 
 class Gender(models.Model):
@@ -43,6 +46,7 @@ class Gender(models.Model):
 
 class Tags(models.Model):
     tags=models.CharField(max_length=256)
+    is_deleted=models.BooleanField(default=False)
     def __str__(self):
         return self.tags
 
@@ -73,13 +77,19 @@ class Campaign(models.Model):
     nor_score = models.DecimalField(default=0, decimal_places=4, max_digits=5)
     campaign_gender=models.ManyToManyField(Gender,blank=True)
     campaign_tags=models.ManyToManyField(Tags,blank=True)
-    campaign_images = models.ManyToManyField(CampaignImage)
+    campaign_images = models.ManyToManyField(CampaignImage, blank=True)
     is_deleted = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if self.campaign_total_funded >= self.campaign_total_funded:
+            self.is_deleted = True
+        super(Campaign, self).save(*args, **kwargs)
 
 
 class Items(models.Model):
     item_title=models.CharField(max_length=256)
     item_quantity=models.BigIntegerField()
+    is_deleted=models.BooleanField(default=False)
 
 def reward_image_directory_path(instance, filename):
     return 'reward_image_{0}/{1}'.format(instance.reward_id, filename)
@@ -105,6 +115,7 @@ class Reward(models.Model):
     reward_quantity_is_unlimited=models.BooleanField(default=False)
     reward_quantity=models.BigIntegerField()
     reward_quantity_left=models.BigIntegerField()    
+    is_deleted=models.BooleanField(default=False)
 
     def __str__(self):
         return self.reward_title

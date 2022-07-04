@@ -35,7 +35,7 @@ class PopularCampaignsView(generics.ListAPIView):
 
     def list(self, request, *args, **kwargs):
         cats = Category.objects.filter()
-        queryset = Campaign.objects.all()
+        queryset = Campaign.objects.filter(is_deleted=False)
         response = {}
         for cat in cats:
             campaigns = queryset.filter(
@@ -52,7 +52,7 @@ class CampaignListPagAPIView(generics.ListAPIView):
     permission_classes = []
 
     def get_queryset(self):
-        queryset = Campaign.objects.all().order_by("-nor_score")
+        queryset = Campaign.objects.filter(is_deleted=False).order_by("-nor_score")
         category_name = self.request.GET.get('category', None)
         if category_name:
             queryset = queryset.filter(
@@ -70,14 +70,14 @@ class SubPopularCampaignsView(generics.ListAPIView):
         category_name = self.request.GET.get('category', None)
         category = Category.objects.get(category_id=category_name)
         cats = SubCategory.objects.filter(category=category)
-        queryset = Campaign.objects.all()
+        queryset = Campaign.objects.filter(is_deleted=False)
         response = {}
         subresponse = {}
         for cat in cats:
             campaigns = queryset.filter(
                 categorites__id=cat.id).distinct().order_by("-nor_score")
-            if len(campaigns) > 20:
-                campaigns = campaigns[:20]
+            if len(campaigns) > 8:
+                campaigns = campaigns[:8]
             ser = ListCampaignSerializer(campaigns, many=True)
             subresponse[cat.category_id] = ser.data
         response['subcategories'] = subresponse
@@ -119,7 +119,62 @@ class UpdateCampaignAPIView(generics.UpdateAPIView):
 
 class ListCreateCampaignImageAPIView(generics.ListCreateAPIView):
     serializer_class = ListCampaignImageSerializer
-    queryset = CampaignImage.objects.filter()
+    queryset = CampaignImage.objects.filter(is_deleted=False)
 
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
+
+
+class ListCreateCategoryAPIView(generics.ListCreateAPIView):
+    serializer_class = CreateCategorySerializer
+    queryset = Category.objects.filter(is_deleted=False)
+
+
+class ListCreateCategoryUnPagAPIView(ListCreateCategoryAPIView):
+    pagination_class = None
+
+class UpdateCategoryAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = CreateCategorySerializer
+
+    def get_object(self):
+        if self.kwargs.get('id'):
+            activity = Category.objects.filter(
+                campaign_id=self.kwargs.get('id'), is_deleted=False)
+        else:
+            raise ValidationError("Category id was not passed in the url")
+        if activity.exists():
+            return activity[0]
+        else:
+            raise Http404
+
+    def destroy(self, *args, **kwargs):
+        instance = self.get_object()
+        instance.is_deleted = True
+        instance.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class ListCreateSubCategoryAPIView(generics.ListCreateAPIView):
+    serializer_class = CreateSubCategorySerializer
+    queryset = SubCategory.objects.filter(is_deleted=False)
+
+class ListCreateSubCategoryUnPagAPIView(ListCreateSubCategoryAPIView):
+    pagination_class = None
+
+class UpdateSubCategoryAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = CreateSubCategorySerializer
+
+    def get_object(self):
+        if self.kwargs.get('id'):
+            activity = SubCategory.objects.filter(id=self.kwargs.get('id'), is_deleted=False)
+        else:
+            raise ValidationError("SubCategory id was not passed in the url")
+        if activity.exists():
+            return activity[0]
+        else:
+            raise Http404
+
+    def destroy(self, *args, **kwargs):
+        instance = self.get_object()
+        instance.is_deleted = True
+        instance.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)

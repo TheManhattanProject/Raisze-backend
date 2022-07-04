@@ -43,7 +43,7 @@ def divide(x, y):
 def test():
     from campaign_statistics.models import Campaign
     from tools.models import Tools
-    campaigns = Campaign.objects.filter()
+    campaigns = Campaign.objects.filter(is_deleted=False)
     scores = []
     for campaign in campaigns:
         time = (timezone.now() - campaign.created_at).days+0.5
