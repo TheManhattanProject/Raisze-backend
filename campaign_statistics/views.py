@@ -47,10 +47,9 @@ class PopularCampaignsView(generics.ListAPIView):
         return Response(response)
 
 
-class CampaignListAPIView(generics.ListAPIView):
+class CampaignListPagAPIView(generics.ListAPIView):
     serializer_class = ListCampaignSerializer
     permission_classes = []
-    pagination_class = None
 
     def get_queryset(self):
         queryset = Campaign.objects.all().order_by("-nor_score")
@@ -59,6 +58,9 @@ class CampaignListAPIView(generics.ListAPIView):
             queryset = queryset.filter(
                 categorites__category__category_id=category_name).distinct().order_by("-nor_score")
         return queryset
+
+class CampaignListUnPagAPIView(CampaignListPagAPIView):
+    pagination_class = None
 
 
 class SubPopularCampaignsView(generics.ListAPIView):

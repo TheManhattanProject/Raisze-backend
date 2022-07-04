@@ -1,11 +1,10 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Campaign, CampaignImage
+from .models import Campaign, CampaignImage, Reward
 
 
 
 class CreateCampaignSerializer(serializers.ModelSerializer):
-
 
     class Meta:
         model = Campaign
@@ -18,6 +17,19 @@ class CreateCampaignSerializer(serializers.ModelSerializer):
     #     trip.save()
     #     TripRating.objects.create(trip=trip)
     #     return trip
+
+class CreateRewardSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Reward
+        fields = '__all__'
+
+
+class CreateRewardSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Reward
+        fields = '__all__'
 
 class ListCampaignSerializer(serializers.ModelSerializer):
 
