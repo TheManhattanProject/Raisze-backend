@@ -46,6 +46,16 @@ class CreateSubCategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_field=("category",)
 
+
+class CreateRewardSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Reward
+        fields = '__all__'
+        read_only_field = (
+            "is_deleted", "items", "associated_campaign", "reward_estimated_delivery_time")
+
+
 class ListCampaignSerializer(serializers.ModelSerializer):
 
     class Meta:

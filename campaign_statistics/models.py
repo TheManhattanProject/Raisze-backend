@@ -7,9 +7,16 @@ from django.core.validators import MaxValueValidator,MinValueValidator
 from django.contrib.auth import get_user_model
 
 
+REWARD_TYPE_CHOICES = [
+    ("Digital", "Digital"),
+    ("Physical", "Physical"),
+    ("Both", "Both")
+]
+
+
 
 class Category(models.Model):
-    category_id=models.CharField(max_length=256)
+    category_id=models.CharField(max_length=256, unique=True)
     is_deleted=models.BooleanField(default=False)
     def __str__(self):
         return self.category_id
@@ -23,7 +30,7 @@ class SubCategory(models.Model):
 
 
 class Country(models.Model):
-    country_name=models.CharField(max_length=256)
+    country_name=models.CharField(max_length=256, unique=True)
     def __str__(self):
         return self.country_name
 
@@ -81,7 +88,7 @@ class Campaign(models.Model):
     is_deleted = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
-        if self.campaign_total_funded >= self.campaign_total_funded:
+        if self.campaign_total_funded >= self.campaign_goal_amount:
             self.is_deleted = True
         super(Campaign, self).save(*args, **kwargs)
 
@@ -108,10 +115,9 @@ class Reward(models.Model):
     reward_description=models.TextField()
     reward_amount=models.DecimalField(max_digits=12,decimal_places=2)
     items=models.ManyToManyField(Items,blank=True)
-    reward_isdigital=models.BooleanField(default=False)
-    reward_onlyphysical = models.BooleanField(default=False)
+    reward_type = models.TextField(max_length=10, choices=REWARD_TYPE_CHOICES)
     reward_shipping=models.CharField(max_length=256,choices=Shipping.choices,default=Shipping.THREE)
-    reward_estimated_delivery=models.DateField()
+    reward_estimated_delivery_time=models.DurationField(null=True, blank=True)
     reward_quantity_is_unlimited=models.BooleanField(default=False)
     reward_quantity=models.BigIntegerField()
     reward_quantity_left=models.BigIntegerField()    

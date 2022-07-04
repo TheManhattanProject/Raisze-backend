@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from .models import Campaign, CampaignImage, Category, SubCategory
 from rest_framework.views import APIView
 from .serializers import *
+from datetime import timedelta
 from .pagination import *
 
 
@@ -172,6 +173,131 @@ class UpdateSubCategoryAPIView(generics.RetrieveUpdateDestroyAPIView):
             return activity[0]
         else:
             raise Http404
+
+    def destroy(self, *args, **kwargs):
+        instance = self.get_object()
+        instance.is_deleted = True
+        instance.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ListCreateCategoryAPIView(generics.ListCreateAPIView):
+    serializer_class = CreateCategorySerializer
+    queryset = Category.objects.filter(is_deleted=False)
+
+
+class ListCreateCategoryUnPagAPIView(ListCreateCategoryAPIView):
+    pagination_class = None
+
+
+class UpdateCategoryAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = CreateCategorySerializer
+
+    def get_object(self):
+        if self.kwargs.get('category_id'):
+            activity = Category.objects.filter(
+                campaign_id=self.kwargs.get('category_id'), is_deleted=False)
+        else:
+            raise ValidationError("Category id was not passed in the url")
+        if activity.exists():
+            return activity[0]
+        else:
+            raise Http404
+
+    def destroy(self, *args, **kwargs):
+        instance = self.get_object()
+        instance.is_deleted = True
+        instance.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ListCreateItemsAPIView(generics.ListCreateAPIView):
+    serializer_class = CreateItemsSerializer
+    queryset = Items.objects.filter(is_deleted=False)
+
+
+class ListCreateItemsUnPagAPIView(ListCreateItemsAPIView):
+    pagination_class = None
+
+
+class UpdateItemsAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = CreateItemsSerializer
+
+    def get_object(self):
+        if self.kwargs.get('id'):
+            activity = Items.objects.filter(
+                id=self.kwargs.get('id'), is_deleted=False)
+        else:
+            raise ValidationError("Items id was not passed in the url")
+        if activity.exists():
+            return activity[0]
+        else:
+            raise Http404
+
+    def destroy(self, *args, **kwargs):
+        instance = self.get_object()
+        instance.is_deleted = True
+        instance.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ListCreateRewardAPIView(generics.ListCreateAPIView):
+    serializer_class = CreateRewardSerializer
+    queryset = Reward.objects.filter(is_deleted=False)
+
+    def create(self, request, *args, **kwargs):
+        # The request should be made in json format with POST
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        reward = self.perform_create(serializer)
+        itemsList = []
+        try:
+            for item_id in request.data.get('items', []):
+                itemsList.append(Items.objects.get(id=item_id))
+        except Exception as e:
+            print(e)
+        reward.items.add(*itemsList)
+        reward.aassociated_campaign = Campaign.objects.get(
+            campaign_id=request.data.get('campaign_id', None))
+        reward.reward_estimated_delivery_time = timedelta(
+            days=request.data.get('estimated_delivery_time', 10))
+        reward.save()
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class UpdateRewardAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = CreateRewardSerializer
+
+    def get_object(self):
+        if self.kwargs.get('id'):
+            activity = Reward.objects.filter(
+                id=self.kwargs.get('id'), is_deleted=False)
+        else:
+            raise ValidationError("Reward id was not passed in the url")
+        if activity.exists():
+            return activity[0]
+        else:
+            raise Http404
+
+    def update(self, request, *args, **kwargs):
+        reward = self.get_object()
+        if request.data.get('items', []):
+            itemsList = []
+            try:
+                for item_id in request.data.get('items', []):
+                    itemsList.append(Items.objects.get(id=item_id))
+            except Exception as e:
+                print(e)
+            reward.items.add(*itemsList)
+        if request.data.get('campaign_id', None):
+            reward.aassociated_campaign = Campaign.objects.get(
+                campaign_id=request.data.get('campaign_id', None))
+        if request.data.get('estimated_delivery_time'):
+            reward.reward_estimated_delivery_time = timedelta(
+                days=request.data.get('estimated_delivery_time', 10))
+        reward.save()
+        return super().update(request, *args, **kwargs)
 
     def destroy(self, *args, **kwargs):
         instance = self.get_object()

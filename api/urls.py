@@ -32,4 +32,8 @@ urlpatterns = [
     path('category/update/<str:id>', UpdateCategoryAPIView.as_view()),
     path('subcategory/list/', ListCreateSubCategoryAPIView.as_view()),
     path('subcategory/update/<int:id>', UpdateSubCategoryAPIView.as_view()),
+    path('items/list/', ListCreateItemsAPIView.as_view()),
+    path('items/update/<int:id>', UpdateItemsAPIView.as_view()),
+    path('reward/list/', ListCreateRewardAPIView.as_view()),
+    path('reward/update/<int:id>', UpdateRewardAPIView.as_view()),
 ]
