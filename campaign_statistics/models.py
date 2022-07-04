@@ -30,6 +30,11 @@ class Country(models.Model):
 def campaign_cover_image_directory_path(instance, filename):
     return 'campaign_cover_image_{0}/{1}'.format(instance.campaign_id, filename)
 
+
+class CampaignImage(models.Model):
+    image = models.ImageField()
+
+
 class Gender(models.Model):
     gender=models.CharField(max_length=256)
     def __str__(self):
@@ -68,6 +73,7 @@ class Campaign(models.Model):
     nor_score = models.DecimalField(default=0, decimal_places=4, max_digits=5)
     campaign_gender=models.ManyToManyField(Gender,blank=True)
     campaign_tags=models.ManyToManyField(Tags,blank=True)
+    campaign_images = models.ManyToManyField(CampaignImage)
 
 
 class Items(models.Model):
@@ -92,6 +98,7 @@ class Reward(models.Model):
     reward_amount=models.DecimalField(max_digits=12,decimal_places=2)
     items=models.ManyToManyField(Items,blank=True)
     reward_isdigital=models.BooleanField(default=False)
+    reward_onlyphysical = models.BooleanField(default=False)
     reward_shipping=models.CharField(max_length=256,choices=Shipping.choices,default=Shipping.THREE)
     reward_estimated_delivery=models.DateField()
     reward_quantity_is_unlimited=models.BooleanField(default=False)
@@ -100,4 +107,3 @@ class Reward(models.Model):
 
     def __str__(self):
         return self.reward_title
-

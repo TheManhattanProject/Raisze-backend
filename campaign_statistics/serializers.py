@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Campaign
+from .models import Campaign, CampaignImage
 
 
 
@@ -21,7 +21,14 @@ class CreateCampaignSerializer(serializers.ModelSerializer):
 
 class ListCampaignSerializer(serializers.ModelSerializer):
 
-
     class Meta:
         model = Campaign
-        exclude = ("categorites", "nor_score")
+        exclude = ("categorites",)
+        read_only_fields = ('campaign_images',)
+
+
+class ListCampaignImageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CampaignImage
+        fields = ('image','id')

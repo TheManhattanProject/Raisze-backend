@@ -23,6 +23,8 @@ urlpatterns = [
     path('tools/update_tools', UpdateToolsView.as_view(), name='update-tools'),
     path('tools/list_tools', ListToolsView.as_view(), name='list-tools'),
     path('campaign/popular', PopularCampaignsView.as_view(), name="popular-campaign"),
-    path('campaign/list', CampaignListAPIView.as_view(), name="campaign-list")
-
+    path('campaign/list', CampaignListAPIView.as_view(), name="campaign-list"),
+    path('campaign/subcategory', SubPopularCampaignsView.as_view(), name="subpopular-campaigns"),
+    path('campaign/update', UpdateCampaignAPIView.as_view(), name="update-campaigns"),
+    path('campaign_image/list', ListCreateCampaignImageAPIView.as_view(),name="list-campaign-image"),
 ]
