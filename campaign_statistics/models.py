@@ -5,7 +5,8 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import MaxValueValidator,MinValueValidator
 from django.contrib.auth import get_user_model
-
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 REWARD_TYPE_CHOICES = [
     ("Digital", "Digital"),
@@ -90,6 +91,12 @@ class Campaign(models.Model):
     def save(self, *args, **kwargs):
         if self.campaign_total_funded >= self.campaign_goal_amount:
             self.is_deleted = True
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            str(self.campaign_id), {
+                'type': 'chat_message',
+                'message': float(self.campaign_total_funded)
+            })
         super(Campaign, self).save(*args, **kwargs)
 
 
