@@ -34,3 +34,5 @@ sqlparse==0.4.2; python_version >= '3.5'
 
 tzdata==2021.5; sys_platform == 'win32'
 
+channels-redis
+

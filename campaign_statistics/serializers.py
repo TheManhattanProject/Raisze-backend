@@ -19,6 +19,14 @@ class CreateCampaignSerializer(serializers.ModelSerializer):
     #     TripRating.objects.create(trip=trip)
     #     return trip
 
+class DetailCampaignSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Campaign
+        fields = '__all__'
+        read_only_fields = ('images', 'categorites', 'campaign_admin', 'country_of_origin', 'nor_score', 'campaign_gender', 'campaign_tags',)
+        depth = 1
+
 class CreateRewardSerializer(serializers.ModelSerializer):
 
     class Meta:

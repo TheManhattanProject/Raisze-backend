@@ -71,6 +71,8 @@ class ListCreateCampaignView(generics.ListCreateAPIView):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
+
+
 class PopularCampaignsView(generics.ListAPIView):
     permission_classes = []
 
@@ -131,8 +133,8 @@ class SubPopularCampaignsView(generics.ListAPIView):
         return Response(response)
 
 
-class UpdateCampaignAPIView(generics.UpdateAPIView):
-    serializer_class = CreateCampaignSerializer
+class UpdateCampaignAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = DetailCampaignSerializer
 
     def get_object(self):
         if self.kwargs.get('id'):
@@ -156,6 +158,12 @@ class UpdateCampaignAPIView(generics.UpdateAPIView):
             print(e)
         campaign.campaign_images.add(*imagesList)
         return super().update(request, *args, **kwargs)
+    
+    def destroy(self, *args, **kwargs):
+        instance = self.get_object()
+        instance.is_deleted = True
+        instance.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ListCreateCampaignImageAPIView(generics.ListCreateAPIView):
