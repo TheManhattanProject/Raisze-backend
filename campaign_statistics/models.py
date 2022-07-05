@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.fields import ArrayField, JSONField
 import uuid
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
@@ -48,6 +48,7 @@ class CampaignImage(models.Model):
 
 class Gender(models.Model):
     gender=models.CharField(max_length=256, unique=True)
+    is_deleted = models.BooleanField(default=False)
     def __str__(self):
         return self.gender
 
@@ -57,6 +58,12 @@ class Tags(models.Model):
     is_deleted=models.BooleanField(default=False)
     def __str__(self):
         return self.tags
+
+
+class Timeline(models.Model):
+    target_time = models.DateTimeField()
+    description = models.TextField()
+    is_deleted = models.BooleanField(default=False)
 
 class Campaign(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -86,6 +93,8 @@ class Campaign(models.Model):
     campaign_gender=models.ManyToManyField(Gender,blank=True)
     campaign_tags=models.ManyToManyField(Tags,blank=True)
     campaign_images = models.ManyToManyField(CampaignImage, blank=True)
+    timelines = models.ManyToManyField(Timeline, blank=True)
+    funding_distribution = models.JSONField()
     is_deleted = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):

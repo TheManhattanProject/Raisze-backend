@@ -1,4 +1,3 @@
-import token
 from django.contrib.auth.models import AnonymousUser
 from rest_framework.authtoken.models import Token
 from channels.db import database_sync_to_async
@@ -23,7 +22,7 @@ class TokenAuthMiddleware(BaseMiddleware):
         if b'authorization' in headers:
             try:
                 token_name, token_key = headers[b'authorization'].decode().split()
-                if not token_name == 'Token':
+                if not token_name == 'token':
                     token_key = None
             except ValueError:
                 token_key = None

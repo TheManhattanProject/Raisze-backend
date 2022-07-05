@@ -1,9 +1,10 @@
+from django.utils import timezone
 from django.forms import ValidationError
 from django.http import Http404
 from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.response import Response
-from .models import Campaign, CampaignImage, Category, Gender, SubCategory, Tags
+from .models import Campaign, CampaignImage, Category, Country, Gender, SubCategory, Tags
 from rest_framework.views import APIView
 from .serializers import *
 from datetime import timedelta
@@ -35,9 +36,23 @@ class CreateTripView(generics.CreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-class ListCreateCampaignView(generics.ListCreateAPIView):
+class ListCreateCampaignAPIView(generics.ListCreateAPIView):
     serializer_class = CreateCampaignSerializer
-    queryset = Campaign.objects.all()
+
+    def get_serializer_class(self):
+        if self.request.method == "GET":
+            self.serializer_class = ListCampaignSerializer
+        return super().get_serializer_class()
+
+    def get_queryset(self):
+        queryset = Campaign.objects.filter(
+            is_deleted=False).order_by("-nor_score")
+        category_name = self.request.GET.get('category', None)
+        if category_name:
+            queryset = queryset.filter(
+                categorites__category__category_id=category_name).distinct().order_by("-nor_score")
+        return queryset
+
 
     def perform_create(self, serializer):
         return serializer.save()
@@ -49,26 +64,44 @@ class ListCreateCampaignView(generics.ListCreateAPIView):
         campaign = self.perform_create(serializer)
         imagesList = []
         try:
-            for image in request.data.get('images', []):
+            for image in request.data.getlist('images', []):
                 imagesList.append(CampaignImage.objects.get(id=image))
         except Exception as e:
             print(e)
         campaign.campaign_images.add(*imagesList)
         gendersList = []
         try:
-            for gender in request.data.get('genders', []):
+            for gender in request.data.getlist('genders', []):
                 gendersList.append(Gender.objects.get(gender=gender))
         except Exception as e:
             print(e)
         campaign.campaign_gender.add(*gendersList)    
         tagsList = []
         try:
-            for tag in request.data.get('tags', []):
+            for tag in request.data.getlist('tags', []):
                 tagsList.append(Tags.objects.get(tags=tag))
         except Exception as e:
             print(e)
         campaign.campaign_tags.add(*tagsList)
+        timelinesList = []
+        try:
+            for timeline in request.data.getlist('timelines', []):
+                timelinesList.append(Timeline.objects.get(id=timeline))
+        except Exception as e:
+            print(e)
+        campaign.timelines.add(*timelinesList)
         headers = self.get_success_headers(serializer.data)
+        if request.data.get('country'):
+            campaign.country_of_origin = Country.objects.get(country_name=request.data.get('country'))
+        if request.data.get('duration'):
+            duration = request.data.get('duration')
+            try:
+                duration = int(duration)
+                campaign.campaign_duration = timezone.now(
+                ) + timedelta(days=int(request.data.get('duration')))
+            except ValueError:
+                campaign.campaign_duration = request.data.get('duration')
+        campaign.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
@@ -204,7 +237,13 @@ class UpdateCategoryAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 class ListCreateSubCategoryAPIView(generics.ListCreateAPIView):
     serializer_class = CreateSubCategorySerializer
-    queryset = SubCategory.objects.filter(is_deleted=False)
+    
+    def get_queryset(self):
+        queryset = SubCategory.objects.filter(is_deleted=False)
+        if self.request.GET.get('category'):
+            queryset = queryset.filter(category=Category.objects.get(
+                category_id=self.request.GET.get('category')))
+        return queryset
 
 class ListCreateSubCategoryUnPagAPIView(ListCreateSubCategoryAPIView):
     pagination_class = None
@@ -288,6 +327,95 @@ class UpdateItemsAPIView(generics.RetrieveUpdateDestroyAPIView):
         instance.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
+class ListCreateTimelineAPIView(generics.ListCreateAPIView):
+    serializer_class = CreateTimelineSerializer
+    queryset = Timeline.objects.filter(is_deleted=False)
+
+
+class ListCreateTimelineUnPagAPIView(ListCreateTimelineAPIView):
+    pagination_class = None
+
+
+class UpdateTimelineAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = CreateTimelineSerializer
+
+    def get_object(self):
+        if self.kwargs.get('id'):
+            activity = Timeline.objects.filter(
+                id=self.kwargs.get('id'), is_deleted=False)
+        else:
+            raise ValidationError("Timeline id was not passed in the url")
+        if activity.exists():
+            return activity[0]
+        else:
+            raise Http404
+
+    def destroy(self, *args, **kwargs):
+        instance = self.get_object()
+        instance.is_deleted = True
+        instance.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ListCreateTagsAPIView(generics.ListCreateAPIView):
+    serializer_class = CreateTagsSerializer
+    queryset = Tags.objects.filter(is_deleted=False)
+
+
+class ListCreateTagsUnPagAPIView(ListCreateTagsAPIView):
+    pagination_class = None
+
+
+class UpdateTagsAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = CreateTagsSerializer
+
+    def get_object(self):
+        if self.kwargs.get('id'):
+            activity = Tags.objects.filter(
+                id=self.kwargs.get('id'), is_deleted=False)
+        else:
+            raise ValidationError("Tags id was not passed in the url")
+        if activity.exists():
+            return activity[0]
+        else:
+            raise Http404
+
+    def destroy(self, *args, **kwargs):
+        instance = self.get_object()
+        instance.is_deleted = True
+        instance.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ListCreateGenderAPIView(generics.ListCreateAPIView):
+    serializer_class = CreateGenderSerializer
+    queryset = Gender.objects.filter(is_deleted=False)
+
+
+class ListCreatGenderUnPagAPIView(ListCreateGenderAPIView):
+    pagination_class = None
+
+
+class UpdateGenderAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = CreateGenderSerializer
+
+    def get_object(self):
+        if self.kwargs.get('id'):
+            activity = Gender.objects.filter(
+                id=self.kwargs.get('id'), is_deleted=False)
+        else:
+            raise ValidationError("Gender id was not passed in the url")
+        if activity.exists():
+            return activity[0]
+        else:
+            raise Http404
+
+    def destroy(self, *args, **kwargs):
+        instance = self.get_object()
+        instance.is_deleted = True
+        instance.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class ListCreateRewardAPIView(generics.ListCreateAPIView):
     serializer_class = CreateRewardSerializer
