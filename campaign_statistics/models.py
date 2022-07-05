@@ -24,7 +24,7 @@ class Category(models.Model):
 
 class SubCategory(models.Model):
     category=models.ForeignKey(Category,on_delete=models.SET_NULL,blank=True, null=True,)
-    subcategory_id=models.CharField(max_length=256)
+    subcategory_id=models.CharField(max_length=256, unique=True)
     is_deleted = models.BooleanField(default=False)
     def __str__(self):
         return self.subcategory_id
@@ -101,12 +101,12 @@ class Campaign(models.Model):
         if self.campaign_total_funded >= self.campaign_goal_amount:
             self.is_deleted = True
         channel_layer = get_channel_layer()
+        super(Campaign, self).save(*args, **kwargs)
         async_to_sync(channel_layer.group_send)(
             str(self.campaign_id), {
-                'type': 'chat_message',
+                'type': 'funding_message',
                 'message': float(self.campaign_total_funded)
             })
-        super(Campaign, self).save(*args, **kwargs)
 
 
 class Items(models.Model):

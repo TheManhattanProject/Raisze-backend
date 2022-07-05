@@ -54,14 +54,18 @@ class ListCreateCampaignAPIView(generics.ListCreateAPIView):
         return queryset
 
 
-    def perform_create(self, serializer):
-        return serializer.save()
-
     def create(self, request, *args, **kwargs):
+        if request.data.get('duration'):
+            duration = request.data.get('duration')
+            try:
+                duration = int(duration)
+                request.data['campaign_duration'] = timezone.now() + timedelta(days=duration)
+            except ValueError:
+                request.data['campaign_duration'] = duration
         # The request should be made in json format with POST
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        campaign = self.perform_create(serializer)
+        campaign = serializer.save()
         imagesList = []
         try:
             for image in request.data.getlist('images', []):
@@ -69,6 +73,13 @@ class ListCreateCampaignAPIView(generics.ListCreateAPIView):
         except Exception as e:
             print(e)
         campaign.campaign_images.add(*imagesList)
+        subcategoriesList = []
+        try:
+            for subcategorie in request.data.getlist('subcategories', []):
+                subcategoriesList.append(SubCategory.objects.get(subcategory_id=subcategorie))
+        except Exception as e:
+            print(e)
+        campaign.categorites.add(*subcategoriesList)
         gendersList = []
         try:
             for gender in request.data.getlist('genders', []):
@@ -91,17 +102,16 @@ class ListCreateCampaignAPIView(generics.ListCreateAPIView):
             print(e)
         campaign.timelines.add(*timelinesList)
         headers = self.get_success_headers(serializer.data)
-        if request.data.get('country'):
-            campaign.country_of_origin = Country.objects.get(country_name=request.data.get('country'))
-        if request.data.get('duration'):
-            duration = request.data.get('duration')
-            try:
-                duration = int(duration)
-                campaign.campaign_duration = timezone.now(
-                ) + timedelta(days=int(request.data.get('duration')))
-            except ValueError:
-                campaign.campaign_duration = request.data.get('duration')
-        campaign.save()
+        # if request.data.get('country'):
+            # campaign.country_of_origin = Country.objects.get(country_name=request.data.get('country'))
+        # if request.data.get('duration'):
+        #     duration = request.data.get('duration')
+        #     try:
+        #         duration = int(duration)
+        #         campaign.campaign_duration = timezone.now() + timedelta(days=duration)
+        #     except ValueError:
+        #         campaign.campaign_duration = duration
+        # campaign.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
@@ -184,12 +194,59 @@ class UpdateCampaignAPIView(generics.RetrieveUpdateDestroyAPIView):
         campaign = self.get_object()
         imagesList = []
         try:
-            for image in request.data.get('images', []):
-                imagesList.append(
-                    CampaignImage.objects.get(id=image))
+            for image in request.data.getlist('images', []):
+                imagesList.append(CampaignImage.objects.get(id=image))
         except Exception as e:
             print(e)
-        campaign.campaign_images.add(*imagesList)
+        if imagesList:
+            campaign.campaign_images.clear()
+            campaign.campaign_images.add(*imagesList)
+        subcategoriesList = []
+        try:
+            for subcategorie in request.data.getlist('subcategories', []):
+                subcategoriesList.append(SubCategory.objects.get(subcategory_id=subcategorie))
+        except Exception as e:
+            print(e)
+        if subcategoriesList:
+            campaign.categorites.clear()
+            campaign.categorites.add(*subcategoriesList)
+        gendersList = []
+        try:
+            for gender in request.data.getlist('genders', []):
+                gendersList.append(Gender.objects.get(gender=gender))
+        except Exception as e:
+            print(e)
+        if gendersList:
+            campaign.campaign_gender.clear()    
+            campaign.campaign_gender.add(*gendersList)    
+        tagsList = []
+        try:
+            for tag in request.data.getlist('tags', []):
+                tagsList.append(Tags.objects.get(tags=tag))
+        except Exception as e:
+            print(e)
+        if tagsList:
+            campaign.campaign_tags.clear()
+            campaign.campaign_tags.add(*tagsList)
+        timelinesList = []
+        try:
+            for timeline in request.data.getlist('timelines', []):
+                timelinesList.append(Timeline.objects.get(id=timeline))
+        except Exception as e:
+            print(e)
+        if timelinesList:
+            campaign.timelines.clear()
+            campaign.timelines.add(*timelinesList)
+        # if request.data.get('country'):
+            # campaign.country_of_origin = Country.objects.get(country_name=request.data.get('country'))
+        if request.data.get('duration'):
+            duration = request.data.get('duration')
+            try:
+                duration = int(duration)
+                campaign.campaign_duration = timezone.now() + timedelta(days=duration)
+            except ValueError:
+                campaign.campaign_duration = duration
+            campaign.save()
         return super().update(request, *args, **kwargs)
     
     def destroy(self, *args, **kwargs):
