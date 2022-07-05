@@ -1,20 +1,12 @@
-# from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
-from dj_rest_auth.registration.views import SocialLoginView
-from django.contrib.auth import get_user_model
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
-from rest_framework.response import Response
-from rest_framework.authtoken.models import Token
-from rest_framework import generics
-
-# class FacebookLogin(SocialLoginView):
-#     adapter_class = FacebookOAuth2Adapter
+from dj_rest_auth.registration.views import SocialLoginView
 
 
-    
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
-    client_class = OAuth2Client
+    # callback_url = 'http://localhost:8000/api/rest-auth/google/'
+    # client_class = OAuth2Client
     # def post(self, request, *args, **kwargs):
     #     response = super(GoogleLogin, self).post(request, *args, **kwargs)
     #     print(response.data.get('key'))

@@ -35,5 +35,5 @@ urlpatterns = [
     path('items/list/', ListCreateItemsAPIView.as_view()),
     path('items/update/<int:id>', UpdateItemsAPIView.as_view()),
     path('reward/list/', ListCreateRewardAPIView.as_view()),
-    path('reward/update/<int:id>', UpdateRewardAPIView.as_view()),
+    path('reward/update/<str:id>', UpdateRewardAPIView.as_view()),
 ]

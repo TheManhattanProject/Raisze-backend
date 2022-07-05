@@ -46,7 +46,7 @@ class CampaignImage(models.Model):
 
 
 class Gender(models.Model):
-    gender=models.CharField(max_length=256)
+    gender=models.CharField(max_length=256, unique=True)
     def __str__(self):
         return self.gender
 

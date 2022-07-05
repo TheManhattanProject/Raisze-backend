@@ -3,16 +3,20 @@ from django.http import Http404
 from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.response import Response
-from .models import Campaign, CampaignImage, Category, SubCategory
+from .models import Campaign, CampaignImage, Category, Gender, SubCategory, Tags
 from rest_framework.views import APIView
 from .serializers import *
 from datetime import timedelta
 from .pagination import *
+from django.db import DatabaseError, transaction
 
 
 class CreateTripView(generics.CreateAPIView):
     serializer_class = CreateCampaignSerializer
     queryset = Campaign.objects.all()
+
+    def perform_create(self, serializer):
+        return serializer.save()
 
     def create(self, request, *args, **kwargs):
         # The request should be made in json format with POST
@@ -30,6 +34,42 @@ class CreateTripView(generics.CreateAPIView):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
+
+class ListCreateCampaignView(generics.ListCreateAPIView):
+    serializer_class = CreateCampaignSerializer
+    queryset = Campaign.objects.all()
+
+    def perform_create(self, serializer):
+        return serializer.save()
+
+    def create(self, request, *args, **kwargs):
+        # The request should be made in json format with POST
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        campaign = self.perform_create(serializer)
+        imagesList = []
+        try:
+            for image in request.data.get('images', []):
+                imagesList.append(CampaignImage.objects.get(id=image))
+        except Exception as e:
+            print(e)
+        campaign.campaign_images.add(*imagesList)
+        gendersList = []
+        try:
+            for gender in request.data.get('genders', []):
+                gendersList.append(Gender.objects.get(gender=gender))
+        except Exception as e:
+            print(e)
+        campaign.campaign_gender.add(*gendersList)    
+        tagsList = []
+        try:
+            for tag in request.data.get('tags', []):
+                tagsList.append(Tags.objects.get(tags=tag))
+        except Exception as e:
+            print(e)
+        campaign.campaign_tags.add(*tagsList)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 class PopularCampaignsView(generics.ListAPIView):
     permission_classes = []
@@ -245,6 +285,9 @@ class ListCreateRewardAPIView(generics.ListCreateAPIView):
     serializer_class = CreateRewardSerializer
     queryset = Reward.objects.filter(is_deleted=False)
 
+    def perform_create(self, serializer):
+        return serializer.save()
+
     def create(self, request, *args, **kwargs):
         # The request should be made in json format with POST
         serializer = self.get_serializer(data=request.data)
@@ -256,11 +299,11 @@ class ListCreateRewardAPIView(generics.ListCreateAPIView):
                 itemsList.append(Items.objects.get(id=item_id))
         except Exception as e:
             print(e)
+        reward.items.clear()
         reward.items.add(*itemsList)
-        reward.aassociated_campaign = Campaign.objects.get(
-            campaign_id=request.data.get('campaign_id', None))
+        reward.aassociated_campaign = Campaign.objects.get(campaign_id=request.data.get('campaign_id', None))
         reward.reward_estimated_delivery_time = timedelta(
-            days=request.data.get('estimated_delivery_time', 10))
+            days=int(request.data.get('estimated_delivery_time', 10)))
         reward.save()
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
@@ -272,7 +315,7 @@ class UpdateRewardAPIView(generics.RetrieveUpdateDestroyAPIView):
     def get_object(self):
         if self.kwargs.get('id'):
             activity = Reward.objects.filter(
-                id=self.kwargs.get('id'), is_deleted=False)
+                reward_id=self.kwargs.get('id'), is_deleted=False)
         else:
             raise ValidationError("Reward id was not passed in the url")
         if activity.exists():
@@ -282,6 +325,8 @@ class UpdateRewardAPIView(generics.RetrieveUpdateDestroyAPIView):
 
     def update(self, request, *args, **kwargs):
         reward = self.get_object()
+        if request.data.get("clear_items", False):
+            reward.items.clear()
         if request.data.get('items', []):
             itemsList = []
             try:
@@ -295,7 +340,7 @@ class UpdateRewardAPIView(generics.RetrieveUpdateDestroyAPIView):
                 campaign_id=request.data.get('campaign_id', None))
         if request.data.get('estimated_delivery_time'):
             reward.reward_estimated_delivery_time = timedelta(
-                days=request.data.get('estimated_delivery_time', 10))
+                days=int(request.data.get('estimated_delivery_time', 10)))
         reward.save()
         return super().update(request, *args, **kwargs)
 
