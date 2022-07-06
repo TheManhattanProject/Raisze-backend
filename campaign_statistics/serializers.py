@@ -1,8 +1,9 @@
 from email.message import Message
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Campaign, CampaignImage, Category, Comment, Gender, Items, Reply, Reward, SubCategory, Tags, Timeline
+from .models import Campaign, CampaignImage, Category, Comment, Gender, Items, Recommendations, Reply, Reward, SubCategory, Tags, Timeline
 from users.serializers import UserSerializer
+
 
 class ListCreateReplySerializer(serializers.ModelSerializer):
     created_by = UserSerializer()
@@ -27,14 +28,13 @@ class ListCreateCommentSerializer(serializers.ModelSerializer):
         return ListCreateReplySerializer(replies, many=True).data
 
 
-
-
 class CreateCampaignSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Campaign
         fields = '__all__'
-        read_only_fields = ('images', 'categorites', 'campaign_admin',  'nor_score', 'campaign_gender', 'campaign_tags', 'timelines')
+        read_only_fields = ('images', 'categorites', 'campaign_admin',
+                            'nor_score', 'campaign_gender', 'campaign_tags', 'timelines')
 
     # def create(self, validated_data):
     #     creator=get_user_model().objects.get(email=validated_data["creatorEmail"])
@@ -43,6 +43,7 @@ class CreateCampaignSerializer(serializers.ModelSerializer):
     #     trip.save()
     #     TripRating.objects.create(trip=trip)
     #     return trip
+
 
 class ListCampaignSerializer(serializers.ModelSerializer):
 
@@ -55,7 +56,6 @@ class ListCampaignSerializer(serializers.ModelSerializer):
                   'campaign_id')
 
 
-
 class DetailCampaignSerializer(serializers.ModelSerializer):
     recommendations = serializers.SerializerMethodField()
     comments = serializers.SerializerMethodField()
@@ -63,16 +63,17 @@ class DetailCampaignSerializer(serializers.ModelSerializer):
     class Meta:
         model = Campaign
         fields = '__all__'
-        read_only_fields = ('images', 'categorites', 'campaign_admin', 'country_of_origin', 'nor_score', 'campaign_gender', 'campaign_tags', 'timelines', 'campaign_duration', 'reccomendations', 'comments')
+        read_only_fields = ('images', 'categorites', 'campaign_admin', 'country_of_origin', 'nor_score',
+                            'campaign_gender', 'campaign_tags', 'timelines', 'campaign_duration', 'reccomendations', 'comments')
         depth = 1
 
     def get_recommendations(self, instance):
-        return {"ok":"ok"}
+        recommendation = Recommendations.objects.get(main_model=instance)
+        return ListCampaignSerializer(recommendation.recommended_models.filter(is_deleted=False), many=True).data
 
     def get_comments(self, instance):
         comments = instance.comments.filter(is_deleted=False)
         return ListCreateCommentSerializer(comments, many=True).data
-
 
 
 class CreateRewardSerializer(serializers.ModelSerializer):
@@ -109,6 +110,7 @@ class CreateTagsSerializer(serializers.ModelSerializer):
         model = Tags
         fields = '__all__'
 
+
 class CreateItemsSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -121,7 +123,7 @@ class CreateSubCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SubCategory
         fields = '__all__'
-        read_only_field=("category",)
+        read_only_field = ("category",)
 
 
 class CreateRewardSerializer(serializers.ModelSerializer):
@@ -145,5 +147,4 @@ class ListCampaignImageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CampaignImage
-        fields = ('image','id')
-
+        fields = ('image', 'id')
