@@ -36,3 +36,4 @@ tzdata==2021.5; sys_platform == 'win32'
 
 channels-redis
 
+tenserflow>=2.0.0

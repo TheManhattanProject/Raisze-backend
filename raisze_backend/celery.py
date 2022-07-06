@@ -1,6 +1,7 @@
 from celery import Celery
 from django.utils import timezone
 import statistics as stat
+from articles.models import Article
 from celery.schedules import crontab
 from django.conf import settings
 import os
@@ -40,10 +41,10 @@ def divide(x, y):
 
 
 @app.task
-def test():
+def update_scores():
     from campaign_statistics.models import Campaign
     from tools.models import Tools
-    campaigns = Campaign.objects.filter(is_deleted=False)
+    campaigns = Campaign.objects.filter(is_deleted=False, score_ignore=False)
     scores = []
     for campaign in campaigns:
         time = (timezone.now() - campaign.created_at).days+0.5
@@ -54,7 +55,7 @@ def test():
     for (a, b) in zip(campaigns, scores):
         a.nor_score = (b-mean)/SD
         a.save()
-    tools = Tools.objects.filter()
+    tools = Tools.objects.filter(is_deleted=False, score_ignore=False)
     scores = []
     for tool in tools:
         scores.append(tool.clicks)
@@ -64,9 +65,18 @@ def test():
     for (a, b) in zip(tools, scores):
         a.nor_score = (b-mean)/SD
         a.save()
+    articles = Article.objects.filter(is_deleted=False, score_ignore=False)
+    scores = []
+    for article in articles:
+        scores.append(article.clicks)
+    if scores:
+        mean = sum(scores)/len(scores)
+        SD = stat.stdev(scores)
+    for (a, b) in zip(articles, scores):
+        a.nor_score = (b-mean)/SD
+        a.save()
 
-
-app.conf.beat_schedule = {"everyday-task": {"task": "raisze_backend.celery.test",
+app.conf.beat_schedule = {"everyday-task": {"task": "raisze_backend.celery.update_scores",
                                             "schedule": crontab(hour=0, minute=1)
                                             }
                           }
@@ -75,3 +85,13 @@ app.conf.beat_schedule = {"everyday-task": {"task": "raisze_backend.celery.test"
 #                                                        "schedule": 10.0
 #                                                        }
 #                           }
+
+@app.task
+def update_recommendation():
+    from campaign_statistics.models import Recommendations, Campaign
+    import tensorflow_hub as hub
+    embed = hub.load("https://tfhub.dev/google/universal-sentence-encoder-large/5")
+    for campaign in Campaign.objects.filter(is_deleted=False):
+        embeddings = embed([
+            campaign.title, campaign.subtitle, campaign.campaign_project_description])
+        print(embeddings)

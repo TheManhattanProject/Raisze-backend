@@ -1,3 +1,4 @@
+from amqp import RecoverableChannelError
 from django.db import models
 from django.contrib.postgres.fields import ArrayField, JSONField
 import uuid
@@ -96,17 +97,41 @@ class Campaign(models.Model):
     timelines = models.ManyToManyField(Timeline, blank=True)
     funding_distribution = models.JSONField()
     is_deleted = models.BooleanField(default=False)
+    score_ignore = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         if self.campaign_total_funded >= self.campaign_goal_amount:
             self.is_deleted = True
-        channel_layer = get_channel_layer()
         super(Campaign, self).save(*args, **kwargs)
+        channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             str(self.campaign_id), {
                 'type': 'funding_message',
                 'message': float(self.campaign_total_funded)
             })
+
+
+class Recommendations(models.Model):
+    main_model = models.OneToOneField(Campaign, related_name="recommendations", on_delete=models.CASCADE)
+    recommended_models = models.ManyToManyField(Campaign, blank=True, related_name="recommended_to")
+
+
+class Comment(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name="comments")
+    message = models.TextField()
+    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, related_name="comments")
+    is_deleted = models.BooleanField(default=False)
+
+
+class Reply(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name="replies")
+    message = models.TextField()
+    comment = models.ForeignKey(
+        Comment, on_delete=models.CASCADE, related_name="replies")
+    is_deleted = models.BooleanField(default=False)
 
 
 class Items(models.Model):

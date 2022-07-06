@@ -184,7 +184,7 @@ class UpdateCampaignAPIView(generics.RetrieveUpdateDestroyAPIView):
             activity = Campaign.objects.filter(
                 campaign_id=self.kwargs.get('id'), is_deleted=False)
         else:
-            raise ValidationError("Asset id was not passed in the url")
+            raise ValidationError("Campaign id was not passed in the url")
         if activity.exists():
             return activity[0]
         else:
@@ -263,6 +263,47 @@ class ListCreateCampaignImageAPIView(generics.ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
 
+
+class CreateCommentForCampaignAPIView(generics.CreateAPIView):
+    serializer_class = ListCreateCommentSerializer
+
+    def get_object(self):
+        if self.kwargs.get('id'):
+            activity = Campaign.objects.filter(
+                campaign_id=self.kwargs.get('id'), is_deleted=False)
+        else:
+            raise ValidationError("Campaign id was not passed in the url")
+        if activity.exists():
+            return activity[0]
+        else:
+            raise Http404
+
+    
+    def create(self, request, *args, **kwargs):
+        campaign = self.get_object()
+        Comment.objects.create(created_by=request.user, campaign=campaign, message=request.data.get('message'))
+        return Response(status=status.HTTP_201_CREATED)
+
+
+class CreateReplyForCampaignAPIView(generics.CreateAPIView):
+    serializer_class = ListCreateReplySerializer
+
+    def get_object(self):
+        if self.kwargs.get('id'):
+            activity = Comment.objects.filter(
+                id=self.kwargs.get('id'), is_deleted=False)
+        else:
+            raise ValidationError("Comment id was not passed in the url")
+        if activity.exists():
+            return activity[0]
+        else:
+            raise Http404
+
+    
+    def create(self, request, *args, **kwargs):
+        comment = self.get_object()
+        Reply.objects.create(created_by=request.user, comment=comment, message=request.data.get('message'))
+        return Response(status=status.HTTP_201_CREATED)
 
 class ListCreateCategoryAPIView(generics.ListCreateAPIView):
     serializer_class = CreateCategorySerializer

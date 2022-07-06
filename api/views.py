@@ -5,8 +5,8 @@ from dj_rest_auth.registration.views import SocialLoginView
 
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
-    # callback_url = 'http://localhost:8000/api/rest-auth/google/'
-    # client_class = OAuth2Client
+    callback_url = 'http://127.0.0.1:8000/api/rest-auth/google/'
+    client_class = OAuth2Client
     # def post(self, request, *args, **kwargs):
     #     response = super(GoogleLogin, self).post(request, *args, **kwargs)
     #     print(response.data.get('key'))
@@ -18,7 +18,7 @@ class GoogleLogin(SocialLoginView):
     # adapter_class = GoogleOAuth2Adapter()
     # serializer_class = GoogleOAuth2Adapter.get_provider().get_serializer_class()
     # def get_callback_url(self, request):
-    # # def get_callback_url(self, request)
+    # # def get_callback_url(seclf, request)
 
     # def login(self, request, *args, **kwargs):
     #     print(request)

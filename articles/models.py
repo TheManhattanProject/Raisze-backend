@@ -9,6 +9,9 @@ class Article(models.Model):
     created_by=models.ForeignKey(get_user_model(),on_delete=models.SET_NULL,blank=True, null=True,related_name='%(class)s_trip_creator_created')
     content=models.TextField(editable=True,blank=False,null=False)
     title=models.CharField(max_length=256)
+    clicks = models.IntegerField(default=0)
+    is_deleted = models.BooleanField(default=False)
+    score_ignore = models.BooleanField(default=False)
 
     def __str__(self) -> str:
             return self.content[:50]

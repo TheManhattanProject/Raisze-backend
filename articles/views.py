@@ -1,3 +1,5 @@
+from django.forms import ValidationError
+from django.http import Http404
 from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.response import Response
@@ -26,3 +28,32 @@ class ListArticleView(generics.ListAPIView):
         if self.request.method == 'GET':
             queryset = Article.objects.all()
             return queryset
+
+
+class UpdateArticlesView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = CreateArticleSerializer
+    # authentication_classes = []
+
+    # def get_permissions(self):
+    #     if self.request.method == "GET":
+    #         self.permission_classes = []
+    #     return super().get_permissions()
+
+    def get_object(self):
+        if self.kwargs.get('id'):
+            activity = Article.objects.filter(
+                id=self.kwargs.get('id'), is_deleted=False)
+        else:
+            raise ValidationError("Article id was not passed in the url")
+        if activity.exists():
+            activity[0].clicks += 1
+            activity[0].save()
+            return activity[0]
+        else:
+            raise Http404
+
+    def destroy(self, *args, **kwargs):
+        instance = self.get_object()
+        instance.is_deleted = True
+        instance.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -1,6 +1,31 @@
+from email.message import Message
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Campaign, CampaignImage, Category, Gender, Items, Reward, SubCategory, Tags, Timeline
+from .models import Campaign, CampaignImage, Category, Comment, Gender, Items, Reply, Reward, SubCategory, Tags, Timeline
+from users.serializers import UserSerializer
+
+class ListCreateReplySerializer(serializers.ModelSerializer):
+    created_by = UserSerializer()
+
+    class Meta:
+        model = Reply
+        fields = ('id', 'created_at', 'message', 'created_by')
+        read_only_fields = ('created_by',)
+
+
+class ListCreateCommentSerializer(serializers.ModelSerializer):
+    replies = serializers.SerializerMethodField()
+    created_by = UserSerializer()
+
+    class Meta:
+        model = Comment
+        fields = ('id', 'created_at', 'message', 'created_by', 'replies')
+        read_only_fields = ('created_by',)
+
+    def get_replies(self, instance):
+        replies = instance.replies.filter(is_deleted=False)
+        return ListCreateReplySerializer(replies, many=True).data
+
 
 
 
@@ -27,16 +52,28 @@ class ListCampaignSerializer(serializers.ModelSerializer):
                   'campaign_launch_date', 'campaign_verification_success',
                   'campaign_detail_completed', 'campaign_launch_date', 'campaign_duration',
                   'campaign_total_funded', 'campaign_goal_amount', 'country_of_origin',
-                  'campaign_id',)
+                  'campaign_id')
+
 
 
 class DetailCampaignSerializer(serializers.ModelSerializer):
+    recommendations = serializers.SerializerMethodField()
+    comments = serializers.SerializerMethodField()
 
     class Meta:
         model = Campaign
         fields = '__all__'
-        read_only_fields = ('images', 'categorites', 'campaign_admin', 'country_of_origin', 'nor_score', 'campaign_gender', 'campaign_tags', 'timelines', 'campaign_duration')
+        read_only_fields = ('images', 'categorites', 'campaign_admin', 'country_of_origin', 'nor_score', 'campaign_gender', 'campaign_tags', 'timelines', 'campaign_duration', 'reccomendations', 'comments')
         depth = 1
+
+    def get_recommendations(self, instance):
+        return {"ok":"ok"}
+
+    def get_comments(self, instance):
+        comments = instance.comments.filter(is_deleted=False)
+        return ListCreateCommentSerializer(comments, many=True).data
+
+
 
 class CreateRewardSerializer(serializers.ModelSerializer):
 
@@ -109,3 +146,4 @@ class ListCampaignImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = CampaignImage
         fields = ('image','id')
+
