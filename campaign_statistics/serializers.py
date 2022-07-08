@@ -33,8 +33,8 @@ class CreateCampaignSerializer(serializers.ModelSerializer):
     class Meta:
         model = Campaign
         fields = '__all__'
-        read_only_fields = ('images', 'categorites', 'campaign_admin',
-                            'nor_score', 'campaign_gender', 'campaign_tags', 'timelines')
+        read_only_fields = ('images', 'categorites', 'nor_score', 
+                            'campaign_gender', 'campaign_tags', 'timelines')
 
     # def create(self, validated_data):
     #     creator=get_user_model().objects.get(email=validated_data["creatorEmail"])

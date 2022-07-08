@@ -26,7 +26,7 @@ class ListArticleView(generics.ListAPIView):
 
     def get_queryset(self):
         if self.request.method == 'GET':
-            queryset = Article.objects.all()
+            queryset = Article.objects.filter(is_deleted=False).order_by("-nor_score")
             return queryset
 
 
@@ -42,7 +42,7 @@ class UpdateArticlesView(generics.RetrieveUpdateDestroyAPIView):
     def get_object(self):
         if self.kwargs.get('id'):
             activity = Article.objects.filter(
-                id=self.kwargs.get('id'), is_deleted=False)
+                article_id=self.kwargs.get('id'), is_deleted=False)
         else:
             raise ValidationError("Article id was not passed in the url")
         if activity.exists():

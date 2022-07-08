@@ -108,17 +108,18 @@ def update_recommendation():
             score = np.dot(campaign_embedding[1], secondary_embedding[1]).sum()
             scores.append([secondary_embedding[0], score])
         scores.sort(key=lambda row: (row[1]), reverse=True)
-        scores = [x[0] for x in scores][:5]
-        length = len(scores)
+        if len(scores > 5):
+            scores = [x[0] for x in scores][:5]
+        else:
+            scores = [x[0] for x in scores]
         reccomendation.recommended_models.add(*scores)
-
     del embed
 
 
 app.conf.beat_schedule = {"everyday-task": {"task": "raisze_backend.celery.update_scores",
-                                            "schedule": crontab(hour=22, minute=31)
+                                            "schedule": crontab(hour=23, minute=37)
                                             },
-                          "weekly-task": {"task": "raisze_backend.celery.update_recommendations",
-                                          "schedule": crontab(hour=22, minute=1, day_of_week=3)
+                          "weekly-task": {"task": "raisze_backend.celery.update_recommendation",
+                                          "schedule": crontab(hour=23, minute=37, day_of_week=3)
                                           }
                           }

@@ -38,4 +38,4 @@ channels-redis
 
 sentencepiece
 
-tenserflow>=2.0.0
+tensorflow

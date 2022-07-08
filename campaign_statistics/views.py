@@ -55,6 +55,7 @@ class ListCreateCampaignAPIView(generics.ListCreateAPIView):
 
 
     def create(self, request, *args, **kwargs):
+        request.data['campaign_admin'] = request.user.id
         if request.data.get('duration'):
             duration = request.data.get('duration')
             try:

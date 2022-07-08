@@ -1,3 +1,5 @@
+from django.forms import ValidationError
+from django.http import Http404
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import generics, status
@@ -10,9 +12,14 @@ from .serializers import UpdateUserSerializer
 class UpdateUser(generics.RetrieveUpdateAPIView):
     lookup_field = 'pk'
     queryset = get_user_model().objects.all()
-    
-    def update(self, request, *args, **kwargs):
-        serializer = UpdateUserSerializer
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    serializer_class = UpdateUserSerializer
+
+    def get_object(self):
+        if self.kwargs.get('id'):
+            activity = get_user_model().objects.filter(id=self.kwargs.get('id'))
+        else:
+            raise ValidationError("User id was not passed in the url")
+        if activity.exists():
+            return activity[0]
+        else:
+            raise Http404
