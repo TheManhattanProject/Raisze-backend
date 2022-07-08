@@ -24,8 +24,13 @@ class CreateToolsSerializer(serializers.ModelSerializer):
 
 class UpdateToolsSerializer(serializers.ModelSerializer):
     category = CreateToolCategorySerializer(many=True)
+    recommendations = serializers.SerializerMethodField()    
 
     class Meta:
         model = Tools
         fields = ('tool', 'attributes', 'category')
         read_only_fields = ('category',)
+    
+    def get_recommendations(self, instance):
+        recommendation = ToolRecommendations.objects.get(main_model=instance)
+        return CreateToolsSerializer(recommendation.recommended_models.filter(is_deleted=False), many=True).data

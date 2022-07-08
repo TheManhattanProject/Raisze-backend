@@ -27,3 +27,8 @@ class Tools(models.Model):
     nor_score = models.DecimalField(default=0, decimal_places=4, max_digits=5)
     score_ignore = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
+
+
+class ToolRecommendations(models.Model):
+    main_model = models.OneToOneField(Tools, related_name="recommendations", on_delete=models.CASCADE)
+    recommended_models = models.ManyToManyField(Tools, blank=True, related_name="recommended_to")

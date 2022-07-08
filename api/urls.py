@@ -5,6 +5,7 @@ from userstatistics.views import *
 from users.views import *
 from tools.views import *
 from campaign_statistics.views import *
+from orders.views import *
 
 
 
@@ -21,7 +22,9 @@ urlpatterns = [
     path('complete_registration', UpdateUser.as_view(), name='update-user'),
     path('valuation/', CreateValuationView.as_view(), name='valuation'),
     path('tools/update/<int:id>', UpdateToolsView.as_view(), name='update-tools'),
+    path('transaction/update/<int:id>', UpdateTransactionAPIView.as_view(), name='update-transaction'),
     path('tools/create/', CreateToolsView.as_view(), name='create-tools'),
+    path('transaction/create/', PaymentAPIView.as_view(), name='create-transaction'),
     path('tools/popular/', PopularToolsView.as_view(), name='popukar-tools'),
     path('tools/list', ListToolsView.as_view(), name='list-tools'),
     path('campaign/popular/', PopularCampaignsView.as_view(), name="popular-campaign"),
@@ -51,5 +54,5 @@ urlpatterns = [
     path('items/update/<int:id>', UpdateItemsAPIView.as_view()),
     path('reward/list/', ListCreateRewardAPIView.as_view()),
     path('reward/update/<str:id>', UpdateRewardAPIView.as_view()),
-    path('update/user/<int:id>/', UpdateUser.as_view())
+    path('update/user/<int:id>/', UpdateUser.as_view()),
 ]

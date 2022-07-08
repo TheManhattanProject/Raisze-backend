@@ -88,6 +88,7 @@ def update_scores():
 def update_recommendation():
     from campaign_statistics.models import Recommendations, Campaign
     import tensorflow_hub as hub
+    from tools.models import Tools, ToolRecommendations
     import numpy as np
     embed = hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
     campaign_embeddings = []
@@ -108,7 +109,30 @@ def update_recommendation():
             score = np.dot(campaign_embedding[1], secondary_embedding[1]).sum()
             scores.append([secondary_embedding[0], score])
         scores.sort(key=lambda row: (row[1]), reverse=True)
-        if len(scores > 5):
+        if len(scores) > 5:
+            scores = [x[0] for x in scores][:5]
+        else:
+            scores = [x[0] for x in scores]
+        reccomendation.recommended_models.add(*scores)
+    tool_embeddings = []
+    for tool in Tools.objects.filter(is_deleted=False):
+        description = tool.tool
+        description = ''.join(
+            e for e in description if e.isalnum() or e.isspace())
+        embeddings = embed([description])
+        tool_embeddings.append([tool, embeddings[0].numpy()])
+    for tool_embedding in tool_embeddings:
+        tool = tool_embedding[0]
+        reccomendation = ToolRecommendations.objects.get(main_model=tool)
+        reccomendation.recommended_models.clear()
+        scores = []
+        for secondary_embedding in tool_embeddings:
+            if secondary_embedding[0].id == tool.id:
+                continue
+            score = np.dot(tool_embedding[1], secondary_embedding[1]).sum()
+            scores.append([secondary_embedding[0], score])
+        scores.sort(key=lambda row: (row[1]), reverse=True)
+        if len(scores) > 5:
             scores = [x[0] for x in scores][:5]
         else:
             scores = [x[0] for x in scores]
