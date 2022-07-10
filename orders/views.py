@@ -121,12 +121,13 @@ class CallbackAPIView(generics.ListAPIView):
     def post(self, request, *args, **kwargs):
         print(request.data)
         print("yes")
-        # body = {'\mid\':'\YOUR_MID_HERE\','\orderId\':'\YOUR_ORDER_ID_HERE\'}
         order_id = request.data.get('ORDERID')
+        body = "{'\mid\':'"+settings.PAYTM_MERCHANT_ID+"','\orderId\':'"+order_id+"'}"
         checksum = request.data.get('CHECKSUMHASH')
         transaction = Transaction.objects.filter(order_id=order_id).first()
         isVerifySignature = paytmchecksum.verifySignature(
-            {"mid":settings.PAYTM_MERCHANT_ID, "orderID":order_id}, settings.PAYTM_SECRET_KEY, checksum)
+            body, settings.PAYTM_SECRET_KEY, checksum)
+        print(isVerifySignature, checksum)
         if isVerifySignature:
             transaction.status = request.data.get('STATUS')
         transaction.save()
