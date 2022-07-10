@@ -44,7 +44,7 @@ class PaymentAPIView(generics.CreateAPIView):
                 "value": str(amount),
                 "currency": str(campaign.campaign_currency),
             },
-            "callbackUrl": "https://127.0.0.1:8000/api/callback/",
+            "callbackUrl": "http://143.110.178.163:8000/api/callback/",
             "userInfo": {
                 "custId": "CUST_"+str(user.id),
             },
