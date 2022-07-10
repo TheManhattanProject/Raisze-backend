@@ -126,7 +126,7 @@ class CallbackAPIView(generics.ListAPIView):
         checksum = request.data.get('CHECKSUMHASH')
         transaction = Transaction.objects.filter(order_id=order_id).first()
         isVerifySignature = paytmchecksum.verifySignature(
-            body, settings.PAYTM_SECRET_KEY, checksum)
+             json.dumps(body), settings.PAYTM_SECRET_KEY, checksum)
         print(isVerifySignature, checksum)
         if isVerifySignature:
             transaction.status = request.data.get('STATUS')
