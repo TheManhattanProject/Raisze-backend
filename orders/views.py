@@ -129,6 +129,9 @@ class CallbackAPIView(generics.ListAPIView):
         paytmParams = dict(request.data)
         paytmChecksum = paytmParams['CHECKSUMHASH']
         paytmParams.pop('CHECKSUMHASH', None)
+        for key in paytmParams:
+            if type(paytmParams[key]) is list:
+                paytmParams[key] = paytmParams[key][0]
         isVerifySignature = paytmchecksum.verifySignature(
         paytmParams, settings.PAYTM_MERCHANT_ID, paytmChecksum)
         print(isVerifySignature, checksum)
