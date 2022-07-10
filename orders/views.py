@@ -127,7 +127,7 @@ class CallbackAPIView(generics.ListAPIView):
         transaction = Transaction.objects.filter(order_id=order_id).first()
         paytmParams = dict()
         paytmParams = dict(request.data)
-        paytmChecksum = paytmParams['CHECKSUMHASH']
+        paytmChecksum = paytmParams['CHECKSUMHASH'][0]
         paytmParams.pop('CHECKSUMHASH', None)
         for key in paytmParams:
             if type(paytmParams[key]) is list:
