@@ -97,7 +97,7 @@ ROOT_URLCONF = 'raisze_backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -111,8 +111,8 @@ TEMPLATES = [
 ]
 
 
-PAYTM_MERCHANT_ID = '<your_merchant_id>'
-PAYTM_SECRET_KEY = '<your_paytm_secret_key>'
+PAYTM_MERCHANT_ID = 'waJxHx32224764812860'
+PAYTM_SECRET_KEY = 'MqxkQZFLQVLeKofp'
 PAYTM_WEBSITE = 'WEBSTAGING'
 PAYTM_CHANNEL_ID = 'WEB'
 PAYTM_INDUSTRY_TYPE_ID = 'Retail'

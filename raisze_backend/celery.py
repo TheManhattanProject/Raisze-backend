@@ -94,6 +94,7 @@ def update_recommendation():
     campaign_embeddings = []
     for campaign in Campaign.objects.filter(is_deleted=False):
         description = campaign.campaign_project_description
+        description.replace('http://', '').replace('https://', '').replace('/',' ')
         description = ''.join(
             e for e in description if e.isalnum() or e.isspace())
         embeddings = embed([description])
