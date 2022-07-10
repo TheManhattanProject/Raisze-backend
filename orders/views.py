@@ -118,7 +118,7 @@ class CallbackAPIView(generics.ListAPIView):
     serializer_class = CreateTransactionSerializer
     permission_classes = []
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         print(request.data)
         print("yes")
         order_id = request.data.get('ORDERID')
