@@ -123,7 +123,7 @@ class CallbackAPIView(generics.ListAPIView):
         print("yes")
         # body = {'\mid\':'\YOUR_MID_HERE\','\orderId\':'\YOUR_ORDER_ID_HERE\'}
         order_id = request.data.get('ORDERID')
-        checksum = request.data.get('CHECKSUMHASH')[0]
+        checksum = request.data.get('CHECKSUMHASH')
         transaction = Transaction.objects.filter(order_id=order_id).first()
         isVerifySignature = paytmchecksum.verifySignature(
             {"mid":settings.PAYTM_MERCHANT_ID, "orderID":order_id}, settings.PAYTM_SECRET_KEY, checksum)
