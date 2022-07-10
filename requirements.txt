@@ -40,6 +40,6 @@ channels-redis
 
 sentencepiece
 
-tensorflow
+# tensorflow
 
 tensorflow-hub
