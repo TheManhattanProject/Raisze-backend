@@ -126,7 +126,7 @@ class CallbackAPIView(generics.ListAPIView):
         checksum = request.data.get('CHECKSUMHASH')
         transaction = Transaction.objects.filter(order_id=order_id).first()
         paytmParams = dict()
-        paytmParams = request.data.to_dict()
+        paytmParams = dict(request.data)
         paytmChecksum = paytmParams['CHECKSUMHASH']
         paytmParams.pop('CHECKSUMHASH', None)
         isVerifySignature = paytmchecksum.verifySignature(
