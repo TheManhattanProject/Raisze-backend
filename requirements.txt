@@ -43,3 +43,7 @@ sentencepiece
 # tensorflow
 
 tensorflow-hub
+
+pycryptodome
+
+Crypto
