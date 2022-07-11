@@ -3,6 +3,8 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import Campaign, CampaignImage, Category, Comment, Gender, Items, Recommendations, Reply, Reward, SubCategory, Tags, Timeline
 from users.serializers import UserSerializer
+from orders.models import Transaction
+from orders.serializers import TransactionViewSerializer
 
 
 class ListCreateReplySerializer(serializers.ModelSerializer):
@@ -54,6 +56,22 @@ class ListCampaignSerializer(serializers.ModelSerializer):
                   'campaign_detail_completed', 'campaign_launch_date', 'campaign_duration',
                   'campaign_total_funded', 'campaign_goal_amount', 'country_of_origin',
                   'campaign_id')
+
+
+class CampaignViewSerializer(serializers.ModelSerializer):
+    transactions = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Campaign
+        fields = ('title', 'subtitle', 'cover_image', 'video_link',
+                  'campaign_launch_date', 'campaign_verification_success',
+                  'campaign_detail_completed', 'campaign_launch_date', 'campaign_duration',
+                  'campaign_total_funded', 'campaign_goal_amount', 'country_of_origin',
+                  'campaign_id', 'transactions')
+
+    def get_transactions(self, instance):
+        transactions = Transaction.objects.filter(status="TXN_SUCCESS", campaign=instance)
+        return TransactionViewSerializer(transactions, many=True).data
 
 
 class DetailCampaignSerializer(serializers.ModelSerializer):

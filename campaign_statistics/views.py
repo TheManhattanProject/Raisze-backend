@@ -2,6 +2,7 @@ from django.utils import timezone
 from django.forms import ValidationError
 from django.http import Http404
 from django.shortcuts import render
+from requests import request
 from rest_framework import generics, status
 from rest_framework.response import Response
 from .models import Campaign, CampaignImage, Category, Country, Gender, SubCategory, Tags
@@ -10,6 +11,15 @@ from .serializers import *
 from datetime import timedelta
 from .pagination import *
 from django.db import DatabaseError, transaction
+
+
+
+class UserCampaignAPIView(generics.ListAPIView):
+    serializer_class = CampaignViewSerializer
+
+    def get_queryset(self):
+        queryset = Campaign.objects.filter(campaign_admin=self.request.user, is_deleted=False)
+        return queryset
 
 
 class CreateTripView(generics.CreateAPIView):

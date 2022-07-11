@@ -104,3 +104,10 @@ class CustomTokenSerializer(serializers.ModelSerializer):
     class Meta:
         model = TokenModel
         fields = ('key', 'user', )
+
+
+class UserViewSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model=get_user_model()
+        fields = ('gender', 'first_name', 'last_name','date_of_birth','pk',)
