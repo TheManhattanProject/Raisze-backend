@@ -15,35 +15,29 @@
 -i https://pypi.org/simple
 
 asgiref==3.5.0; python_version >= '3.7'
-
 celery==5.2.1
-
 dj-database-url==0.5.0
-
 paytmchecksum
-
 django==4.0.3
-
 gunicorn==20.1.0
-
 psycopg2-binary==2.9.3
-
 redis==4.0.2
-
 redis-server
-
 sqlparse==0.4.2; python_version >= '3.5'
-
 tzdata==2021.5; sys_platform == 'win32'
-
 channels-redis
-
 sentencepiece
-
 # tensorflow
-
 tensorflow-hub
-
 pycryptodome
-
 Crypto
+gunicorn
+channels
+dj-rest-auth
+django-allauth
+djangorestframework
+django-cors-headers
+django-rest-auth
+django-storages
+boto3
+pillow
