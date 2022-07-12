@@ -5,7 +5,7 @@ from dj_rest_auth.registration.views import SocialLoginView
 
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
-    # callback_url = 'http://127.0.0.1:8000/api/rest-auth/google/'
+    # callback_url = 'http://127.0.0.1:80/api/rest-auth/google/'
     # client_class = OAuth2Client
     # def post(self, request, *args, **kwargs):
     #     response = super(GoogleLogin, self).post(request, *args, **kwargs)
