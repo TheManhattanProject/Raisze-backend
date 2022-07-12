@@ -259,7 +259,7 @@ CELERY_RESULT_BACKEND = "redis://redis:6379/0"
 CELERY_TIMEZONE = "asia/kolkata"
 # STATICFILES_STORAGE = 'custom_storages.StaticStorage'
 DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
-
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # Use AWS_S3_ENDPOINT_URL here if you haven't enabled the CDN and got a custom domain. 
 # STATIC_URL = '/static/'
 STATIC_URL = "/static/"
