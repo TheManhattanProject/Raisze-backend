@@ -4,8 +4,15 @@ from django.contrib.auth import get_user_model
 from .models import Campaign, CampaignImage, Category, Comment, Gender, Items, Recommendations, Reply, Reward, SubCategory, Tags, Timeline
 from users.serializers import UserSerializer
 from orders.models import Transaction
-from orders.serializers import TransactionViewSerializer
+from users.serializers import UserViewSerializer
 
+
+class TransactionViewSerializer(serializers.ModelSerializer):
+    made_by = UserViewSerializer()
+
+    class Meta:
+        model = Transaction
+        fields = ('id', 'amount', 'made_by')
 
 class ListCreateReplySerializer(serializers.ModelSerializer):
     created_by = UserSerializer()

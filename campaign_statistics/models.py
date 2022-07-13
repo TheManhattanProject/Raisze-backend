@@ -149,6 +149,7 @@ class Reward(models.Model):
         THREE = '3', "Anywhere in the world"
 
 
+
     reward_id=models.UUIDField(primary_key = True,default = uuid.uuid4,editable = False)
     reward_image=models.ImageField(upload_to=reward_image_directory_path)
     associated_campaign=models.ForeignKey(Campaign,on_delete=models.SET_NULL,blank=True, null=True,)

@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import *
 from users.serializers import UserViewSerializer
+from campaign_statistics.serializers import ListCampaignSerializer, CreateRewardSerializer
+
 
 class CreateTransactionSerializer(serializers.ModelSerializer):
 
@@ -10,9 +12,13 @@ class CreateTransactionSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'order_id', 'made_by', 'checksum')
 
 
-class TransactionViewSerializer(serializers.ModelSerializer):
+class ListTransactionSerializer(serializers.ModelSerializer):
     made_by = UserViewSerializer()
+    campaign = ListCampaignSerializer()
+    rewards = CreateRewardSerializer(many=True)
 
     class Meta:
         model = Transaction
-        fields = ('id', 'amount', 'made_by')
+        fields = '__all__'
+        read_only_fields = ('id', 'order_id', 'made_by', 'checksum')
+

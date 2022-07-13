@@ -26,11 +26,14 @@ class PaymentAPIView(generics.CreateAPIView):
 
         rewards_id = request.data.getlist('rewards', [])
         rewards = Reward.objects.filter(reward_id__in=rewards_id)
-        amount = int(request.data.get('amount', 0)) + int(request.data.get('bonus', 0))
+        amount = int(request.data.get('amount', 0)) 
         if rewards:
             amount += rewards.aggregate(Sum('reward_amount')).get('reward_amount__sum')
         campaign = Campaign.objects.get(campaign_id=request.data['campaign_id'])
-        transaction = Transaction.objects.create(made_by=user, amount=amount, campaign=campaign)
+        transaction = Transaction.objects.create(made_by=user, amount=amount, campaign = campaign,
+                                                 bonus=int(request.data.get('bonus', 0)), shipping_address=request.data.get('shipping_address', None),
+                                                 billing_address=request.data.get('billing_address', None))
+        amount += int(request.data.get('bonus', 0))
         transaction.rewards.add(*rewards)
         merchant_key = settings.PAYTM_SECRET_KEY
         transaction.order_id = transaction.made_on.strftime('PAY2ME%Y%m%dODR') + str(transaction.id)
@@ -42,11 +45,12 @@ class PaymentAPIView(generics.CreateAPIView):
             "orderId": transaction.order_id,
             "txnAmount": {
                 "value": str(amount),
-                "currency": str(campaign.campaign_currency),
+                "currency": "INR",
             },
-            "callbackUrl": "http://143.110.178.163:80/api/callback/",
+            # "callbackUrl": "http://127.0.0.1/api/callback/",
             "userInfo": {
                 "custId": "CUST_"+str(user.id),
+                "mobile":9811370404
             },
         }
         transaction.save()
@@ -146,3 +150,11 @@ class PaymentView(View):
         transaction = Transaction.objects.get(id=id)
         token = transaction.token
         return render(request, 'payments.html', {'token':token, 'mid':settings.PAYTM_MERCHANT_ID, 'order_id':transaction.order_id})
+
+
+class UserTransactionListAPIView(generics.ListAPIView):
+    serializer_class = ListTransactionSerializer
+
+    def get_queryset(self):
+        queryset = Transaction.objects.filter(made_by=self.request.user)
+        return queryset
