@@ -1,7 +1,7 @@
 from email.message import Message
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Campaign, CampaignImage, Category, Comment, Gender, Items, Recommendations, Reply, Reward, SubCategory, Tags, Timeline
+from .models import Campaign, CampaignImage, Category, Comment, Gender, Items, Recommendations, Reply, Reward, Shipping, SubCategory, Tags, Timeline
 from users.serializers import UserSerializer
 from orders.models import Transaction
 from users.serializers import UserViewSerializer
@@ -13,6 +13,19 @@ class TransactionViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
         fields = ('id', 'amount', 'made_by')
+
+class ListShippingSerializer(serializers.ModelSerializer):
+    country = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Shipping
+        fields = '__all__'
+        read_only_fields = ('country',)
+
+    def get_country(self, instance):
+        if instance.country:
+            return instance.country.country_name
+        return None
 
 class ListCreateReplySerializer(serializers.ModelSerializer):
     created_by = UserSerializer()
@@ -101,13 +114,6 @@ class DetailCampaignSerializer(serializers.ModelSerializer):
         return ListCreateCommentSerializer(comments, many=True).data
 
 
-class CreateRewardSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Reward
-        fields = '__all__'
-
-
 class CreateCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -152,12 +158,13 @@ class CreateSubCategorySerializer(serializers.ModelSerializer):
 
 
 class CreateRewardSerializer(serializers.ModelSerializer):
+    # shippings = ListShippingSerializer(many=True)
 
     class Meta:
         model = Reward
         fields = '__all__'
         read_only_field = (
-            "is_deleted", "items", "associated_campaign", "reward_estimated_delivery_time")
+            "is_deleted", "items", "associated_campaign", "reward_estimated_delivery_time", "shippings")
 
 
 # class ListCampaignSerializer(serializers.ModelSerializer):
@@ -173,3 +180,4 @@ class ListCampaignImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = CampaignImage
         fields = ('image', 'id')
+

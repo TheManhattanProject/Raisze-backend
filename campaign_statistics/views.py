@@ -5,7 +5,7 @@ from django.shortcuts import render
 from requests import request
 from rest_framework import generics, status
 from rest_framework.response import Response
-from .models import Campaign, CampaignImage, Category, Country, Gender, SubCategory, Tags
+from .models import Campaign, CampaignImage, Category, Country, Gender, Shipping, SubCategory, Tags
 from rest_framework.views import APIView
 from .serializers import *
 from datetime import timedelta
@@ -544,8 +544,14 @@ class ListCreateRewardAPIView(generics.ListCreateAPIView):
                 itemsList.append(Items.objects.get(id=item_id))
         except Exception as e:
             print(e)
-        reward.items.clear()
         reward.items.add(*itemsList)
+        shippingsList = []
+        try:
+            for item_id in request.data.get('shippings', []):
+                shippingsList.append(Shipping.objects.get(id=item_id))
+        except Exception as e:
+            print(e)
+        reward.shippings.add(*shippingsList)
         reward.aassociated_campaign = Campaign.objects.get(campaign_id=request.data.get('campaign_id', None))
         reward.reward_estimated_delivery_time = timedelta(
             days=int(request.data.get('estimated_delivery_time', 10)))
@@ -594,3 +600,19 @@ class UpdateRewardAPIView(generics.RetrieveUpdateDestroyAPIView):
         instance.is_deleted = True
         instance.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+class ListCreateShippingsAPIView(generics.ListCreateAPIView):
+    queryset = Shipping.objects.all()
+    serializer_class = ListShippingSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        ship = serializer.save()
+        if not ship.is_everywhere:
+            ship.country = Country.objects.get(country_name=request.data.get('country'))
+        ship.save()
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

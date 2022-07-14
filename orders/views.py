@@ -16,6 +16,8 @@ import paytmchecksum
 from django.db.models import Sum
 from rest_framework import generics
 from utils.paytm import generate_checksum
+from campaign_statistics.models import Country
+from campaign_statistics.serializers import CreateRewardSerializer
 
 
 class PaymentAPIView(generics.CreateAPIView):
@@ -23,10 +25,24 @@ class PaymentAPIView(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         user = request.user
-
+        country = Country.objects.get(country_name=request.data.get('country'))
         rewards_id = request.data.getlist('rewards', [])
+        print(rewards_id)
         rewards = Reward.objects.filter(reward_id__in=rewards_id)
         amount = int(request.data.get('amount', 0)) 
+        for reward in rewards:
+            if reward.reward_type == "Digital":
+                continue
+            ship = reward.shippings.filter(country=country).first()
+            print(rewards, ship, country, reward.shippings.all())
+            if ship:
+                amount += ship.cost
+            else:
+                ship = reward.shippings.filter(is_everywhere=True).first()
+                if ship:
+                    amount += ship.cost
+                else:
+                    return Response({**CreateRewardSerializer(reward).data, "status":"This reward is not available in your country"})
         if rewards:
             amount += rewards.aggregate(Sum('reward_amount')).get('reward_amount__sum')
         campaign = Campaign.objects.get(campaign_id=request.data['campaign_id'])

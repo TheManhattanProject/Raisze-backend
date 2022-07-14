@@ -142,14 +142,21 @@ class Items(models.Model):
 def reward_image_directory_path(instance, filename):
     return 'reward_image_{0}/{1}'.format(instance.reward_id, filename)
 
+class Shipping(models.Model):
+    country = models.ForeignKey(Country, null=True, blank=True, on_delete=models.CASCADE)
+    cost = models.DecimalField(max_digits=10, decimal_places=2)
+    is_everywhere = models.BooleanField(default=False)
+
+
+
 class Reward(models.Model):
-    class Shipping(models.TextChoices):
+    class Shippingk(models.TextChoices):
         ONE = '1', "Shipped through email"
         TWO = '2', "Shipping restricted to certain countries"
         THREE = '3', "Anywhere in the world"
 
 
-
+    shippings = models.ManyToManyField(Shipping, blank=True)
     reward_id=models.UUIDField(primary_key = True,default = uuid.uuid4,editable = False)
     reward_image=models.ImageField(upload_to=reward_image_directory_path)
     associated_campaign=models.ForeignKey(Campaign,on_delete=models.SET_NULL,blank=True, null=True,)
@@ -158,7 +165,7 @@ class Reward(models.Model):
     reward_amount=models.DecimalField(max_digits=12,decimal_places=2)
     items=models.ManyToManyField(Items,blank=True)
     reward_type = models.TextField(max_length=10, choices=REWARD_TYPE_CHOICES)
-    reward_shipping=models.CharField(max_length=256,choices=Shipping.choices,default=Shipping.THREE)
+    reward_shipping=models.CharField(max_length=256,choices=Shippingk.choices,default=Shippingk.THREE)
     reward_estimated_delivery_time=models.DurationField(null=True, blank=True)
     reward_quantity_is_unlimited=models.BooleanField(default=False)
     reward_quantity=models.BigIntegerField()
