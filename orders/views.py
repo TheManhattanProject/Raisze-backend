@@ -61,9 +61,9 @@ class PaymentAPIView(generics.CreateAPIView):
             "orderId": transaction.order_id,
             "txnAmount": {
                 "value": str(amount),
-                "currency": "INR",
+                "currency": campaign.campaign_currency,
             },
-            # "callbackUrl": "http://127.0.0.1/api/callback/",
+            "callbackUrl": "https://backend.raisze.space/api/callback/",
             "userInfo": {
                 "custId": "CUST_"+str(user.id),
                 "mobile":9811370404
