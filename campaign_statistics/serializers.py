@@ -3,6 +3,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import Campaign, CampaignImage, Category, Comment, Gender, Items, Recommendations, Reply, Reward, Shipping, SubCategory, Tags, Timeline
 from users.serializers import UserSerializer
+from django.core.paginator import Paginator
 from orders.models import Transaction
 from users.serializers import UserViewSerializer
 
@@ -12,7 +13,7 @@ class TransactionViewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Transaction
-        fields = ('id', 'amount', 'made_by')
+        fields = ('id', 'amount', 'made_by', 'bonus', 'shipping_address', 'billing_address', 'rewards')
 
 class ListShippingSerializer(serializers.ModelSerializer):
     country = serializers.SerializerMethodField()
@@ -97,12 +98,13 @@ class CampaignViewSerializer(serializers.ModelSerializer):
 class DetailCampaignSerializer(serializers.ModelSerializer):
     recommendations = serializers.SerializerMethodField()
     comments = serializers.SerializerMethodField()
+    transactions = serializers.SerializerMethodField()
 
     class Meta:
         model = Campaign
         fields = '__all__'
         read_only_fields = ('images', 'categorites', 'campaign_admin', 'country_of_origin', 'nor_score',
-                            'campaign_gender', 'campaign_tags', 'timelines', 'campaign_duration', 'reccomendations', 'comments')
+                            'campaign_gender', 'campaign_tags', 'timelines', 'campaign_duration', 'reccomendations', 'comments', 'transactions')
         depth = 1
 
     def get_recommendations(self, instance):
@@ -112,6 +114,13 @@ class DetailCampaignSerializer(serializers.ModelSerializer):
     def get_comments(self, instance):
         comments = instance.comments.filter(is_deleted=False)
         return ListCreateCommentSerializer(comments, many=True).data
+
+    def get_transactions(self, instance):
+        page = self.context.get('request').GET.get('transaction_page', 1)
+        queryset = Transaction.objects.filter(campaign=instance, status="TXN_SUCCESS")
+        paginator = Paginator(queryset, 20)
+        page = paginator.page(page)
+        return {"data":TransactionViewSerializer(page.object_list, many=True).data, "has_next":page.has_next()}
 
 
 class CreateCategorySerializer(serializers.ModelSerializer):

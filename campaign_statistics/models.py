@@ -16,6 +16,11 @@ REWARD_TYPE_CHOICES = [
 ]
 
 
+CAMPAIGN_STATUS_CHOICES = [
+    ("Pending","Pending"),
+    ("Completed","Completed")
+]
+
 
 class Category(models.Model):
     category_id=models.CharField(max_length=256, unique=True)
@@ -73,6 +78,7 @@ class Campaign(models.Model):
     campaign_admin=models.ForeignKey(get_user_model(),on_delete=models.SET_NULL,blank=True, null=True,)
     country_of_origin=models.ForeignKey(Country,on_delete=models.SET_NULL,blank=False, null=True,)
     title=models.CharField(max_length=256)
+    status = models.CharField(max_length=10, choices=CAMPAIGN_STATUS_CHOICES, default="Pending")
     subtitle=models.TextField()
     cover_image=models.ImageField(upload_to=campaign_cover_image_directory_path)
     video_link=models.TextField()
@@ -101,7 +107,7 @@ class Campaign(models.Model):
 
     def save(self, *args, **kwargs):
         if self.campaign_total_funded >= self.campaign_goal_amount:
-            self.is_deleted = True
+            self.status = "Completed"
         super(Campaign, self).save(*args, **kwargs)
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(

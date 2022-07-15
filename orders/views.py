@@ -45,7 +45,7 @@ class PaymentAPIView(generics.CreateAPIView):
                     return Response({**CreateRewardSerializer(reward).data, "status":"This reward is not available in your country"})
         if rewards:
             amount += rewards.aggregate(Sum('reward_amount')).get('reward_amount__sum')
-        campaign = Campaign.objects.get(campaign_id=request.data['campaign_id'])
+        campaign = Campaign.objects.get(campaign_id=request.data['campaign_id'], status="Pending")
         transaction = Transaction.objects.create(made_by=user, amount=amount, campaign = campaign,
                                                  bonus=int(request.data.get('bonus', 0)), shipping_address=request.data.get('shipping_address', None),
                                                  billing_address=request.data.get('billing_address', None))

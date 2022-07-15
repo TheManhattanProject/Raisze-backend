@@ -60,4 +60,5 @@ urlpatterns = [
     path('reward/update/<str:id>', UpdateRewardAPIView.as_view()),
     path('update/user/<int:id>/', UpdateUser.as_view()),
     path('user/transaction/', UserTransactionListAPIView.as_view()),
+    path('user/campaign/', ListUserCampaignAPIView.as_view()),
 ]
