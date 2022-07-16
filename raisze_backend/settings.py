@@ -211,7 +211,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = '/staticfiles/'
 
 
 
@@ -262,8 +262,8 @@ DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # Use AWS_S3_ENDPOINT_URL here if you haven't enabled the CDN and got a custom domain. 
 # STATIC_URL = '/static/'
-STATIC_URL = "/static/"
+STATIC_URL = "/staticfiles/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 MEDIA_URL = '{}/{}/'.format(AWS_S3_CUSTOM_DOMAIN, 'media')
-MEDIA_ROOT = 'media/'
+MEDIA_ROOT = 'mediafiles/'
