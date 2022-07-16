@@ -142,9 +142,9 @@ def update_recommendation():
 
 
 app.conf.beat_schedule = {"everyday-task": {"task": "raisze_backend.celery.update_scores",
-                                            "schedule": crontab(hour=11, minute=15)
+                                            "schedule": crontab(hour=11, minute=20)
                                             },
                           "weekly-task": {"task": "raisze_backend.celery.update_recommendation",
-                                          "schedule": crontab(hour=11, minute=15, day_of_week=6)
+                                          "schedule": crontab(hour=11, minute=20, day_of_week=6)
                                           }
                           }
