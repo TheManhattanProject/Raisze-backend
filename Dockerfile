@@ -22,5 +22,6 @@ RUN chmod +x /start-celeryworker
 COPY ./raisze_backend/celery_start_scripts/beat /start-celerybeat
 RUN sed -i 's/\r$//g' /start-celerybeat
 RUN chmod +x /start-celerybeat
+RUN chmod a+rwx /etc
 # Copy project
 COPY . /code/
